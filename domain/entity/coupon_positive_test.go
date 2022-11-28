@@ -1,7 +1,7 @@
 package entity_test
 
 import (
-	"gamestore/domain/entity"
+	"final-project/domain/entity"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

@@ -18,7 +18,7 @@ func InitMysqlDB() *sql.DB {
 	dbPort := "3306"
 	dbUser := "root"
 	dbPass := ""
-	dbName := ""
+	dbName := "db_gamestore"
 
 	//root:@tcp(localhost:3306)/db_salt_academy
 	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPass, dbHost, dbPort, dbName)

@@ -28,7 +28,7 @@ func InsertDataCustomer(ctx context.Context) *entity.Customer {
 		Name:        "Divo",
 		Alamat:      "Tanah Abang",
 		PhoneNumber: "081234567890",
-		CreatedTime: "2022-30-11",
+		CreatedTime: "2022-11-11",
 	}
 
 	FirstCustomer, errCheckDomainCustomer := entity.NewCustomer(BuildFirstCustomer)

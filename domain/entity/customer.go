@@ -10,7 +10,7 @@ type Customer struct {
 	name        string
 	alamat      string
 	phoneNumber string
-	createTime  time.Time
+	createdTime time.Time
 }
 
 type DTOCustomer struct {
@@ -41,7 +41,7 @@ func NewCustomer(dto DTOCustomer) (*Customer, error) {
 		name:        dto.Name,
 		alamat:      dto.Alamat,
 		phoneNumber: dto.PhoneNumber,
-		createTime:  strCreatedTime,
+		createdTime: strCreatedTime,
 	}
 	return customer, nil
 }
@@ -63,5 +63,5 @@ func (c *Customer) GetPhoneNumber() string {
 }
 
 func (c *Customer) GetCreatedTime() string {
-	return c.createTime.Format("2006-01-02")
+	return c.createdTime.Format("2006-01-02")
 }

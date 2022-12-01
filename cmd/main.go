@@ -2,51 +2,35 @@ package main
 
 import (
 	"context"
-	"final-project/domain/entity"
-	"final-project/domain/repository"
 	databasesql "final-project/internal/config/database/mysql"
+	"final-project/internal/delivery/http/customer_hendler"
 	"final-project/internal/repository/mysql"
 	"fmt"
+	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 var (
 	connectionDatabase      = databasesql.InitMysqlDB()
 	customerRepositoryMysql = mysql.NewCustomerMysql(connectionDatabase)
+	ctx                     = context.Background()
 )
 
-type CustomerLogicFactoryHandler struct {
-	customerRepository repository.InterfaceRepoCustomer
-}
-
-func NewCostumerLogicFactoryHandler(repoCustomerImplementation repository.InterfaceRepoCustomer) *CustomerLogicFactoryHandler {
-	return &CustomerLogicFactoryHandler{customerRepository: repoCustomerImplementation}
-}
-
-func InsertDataCustomer(ctx context.Context) *entity.Customer {
-	BuildFirstCustomer := entity.DTOCustomer{
-		UserID:      1,
-		Name:        "Divo",
-		Alamat:      "Tanah Abang",
-		PhoneNumber: "081234567890",
-		CreatedTime: "2022-11-11",
-	}
-
-	FirstCustomer, errCheckDomainCustomer := entity.NewCustomer(BuildFirstCustomer)
-	if errCheckDomainCustomer != nil {
-		fmt.Println("GAGAL CREATE CUSTOMER KARENA WRONG DOMAIN")
-		panic(errCheckDomainCustomer)
-	}
-	fmt.Println("--->Proces Store Data To DB")
-	handlerRepo := NewCostumerLogicFactoryHandler(customerRepositoryMysql)
-	errStoreRepo := handlerRepo.customerRepository.InsertDataCustomer(ctx, FirstCustomer)
-	if errStoreRepo != nil {
-		fmt.Println("GAGAL CREATE CUSTOMER ADA KESALAHAN DALAM PENYIMPANAN")
-		panic(errStoreRepo)
-	}
-	return FirstCustomer
-}
-
 func main() {
-	ctx := context.Background()
-	InsertDataCustomer(ctx)
+	r := mux.NewRouter()
+
+	handlerCustomer := customer_hendler.NewCustomerHandler(ctx, customerRepositoryMysql)
+
+	r.HandleFunc("/", ParamHandlerWithoutInput).Methods(http.MethodGet)
+	r.HandleFunc("/create-customer", handlerCustomer.StoreDataCustomer).Methods(http.MethodPost)
+
+	http.HandleFunc("/test", ParamHandlerWithoutInput)
+	fmt.Println("localhost:8080")
+	http.ListenAndServe(":8080", r)
+}
+
+func ParamHandlerWithoutInput(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "SUCCES OK")
 }

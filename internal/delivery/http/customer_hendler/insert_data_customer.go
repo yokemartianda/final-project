@@ -15,13 +15,13 @@ func (c *CustomerHandler) StoreDataCustomer(w http.ResponseWriter, r *http.Reque
 	)
 
 	errDecode := decoder.Decode(&req)
+
 	if errDecode != nil {
+		fmt.Println(errDecode)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("Error decode data"))
 		return
 	}
-
-	fmt.Println(req)
 
 	customer, err := entity.NewCustomer(entity.DTOCustomer{
 		UserID:      4,

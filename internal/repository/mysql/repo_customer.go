@@ -28,7 +28,7 @@ func (c *CustomerMysqlInteractor) InsertDataCustomer(ctx context.Context, dataCu
 	insertQuery := "INSERT INTO customer (user_id, name, alamat, phone_number, created_time)" +
 		"VALUES(?, ?, ?, ?, ?)"
 
-	_, errMysql = c.db.Exec(insertQuery, dataCustomer.GetUserID(), dataCustomer.GetName(), dataCustomer.GetAlamat(), dataCustomer.GetPhoneNumber(), dataCustomer.GetCreatedTime())
+	_, errMysql = c.db.Exec(insertQuery, dataCustomer.GetCustomerID(), dataCustomer.GetName(), dataCustomer.GetAlamat(), dataCustomer.GetPhoneNumber(), dataCustomer.GetCreatedTime())
 
 	if errMysql != nil {
 		return errMysql

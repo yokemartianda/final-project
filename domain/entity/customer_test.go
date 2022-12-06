@@ -17,7 +17,6 @@ type TestCustomerValidation struct {
 
 func TestNewDataCustomerValidation(t *testing.T) {
 	dataCustomer, err := entity.NewCustomer(entity.DTOCustomer{
-		UserID:      1,
 		Name:        "Divo",
 		Alamat:      "Padang",
 		PhoneNumber: "0821756563",

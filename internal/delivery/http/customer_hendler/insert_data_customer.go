@@ -24,11 +24,11 @@ func (c *CustomerHandler) StoreDataCustomer(w http.ResponseWriter, r *http.Reque
 	}
 
 	customer, err := entity.NewCustomer(entity.DTOCustomer{
-		UserID:      4,
-		Name:        "Ridho",
-		Alamat:      "Bandung",
-		PhoneNumber: "085261547844",
-		CreatedTime: "2019-11-11",
+
+		Name:        "Putra",
+		Alamat:      "Medan",
+		PhoneNumber: "085261334644",
+		CreatedTime: "2019-08-07",
 	})
 
 	if err != nil {

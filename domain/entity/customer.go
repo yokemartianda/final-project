@@ -2,11 +2,13 @@ package entity
 
 import (
 	"errors"
+	"math/rand"
+	"strconv"
 	"time"
 )
 
 type Customer struct {
-	userID      int
+	customerID  string
 	name        string
 	alamat      string
 	phoneNumber string
@@ -14,7 +16,7 @@ type Customer struct {
 }
 
 type DTOCustomer struct {
-	UserID      int
+	CustomerID  string
 	Name        string
 	Alamat      string
 	PhoneNumber string
@@ -37,7 +39,7 @@ func NewCustomer(dto DTOCustomer) (*Customer, error) {
 	strCreatedTime, _ := time.Parse("2006-01-02", dto.CreatedTime)
 
 	customer := &Customer{
-		userID:      dto.UserID,
+		customerID:  dto.CustomerID,
 		name:        dto.Name,
 		alamat:      dto.Alamat,
 		phoneNumber: dto.PhoneNumber,
@@ -46,8 +48,19 @@ func NewCustomer(dto DTOCustomer) (*Customer, error) {
 	return customer, nil
 }
 
-func (c *Customer) GetUserID() int {
-	return c.userID
+// generate kode article
+func (c *Customer) SetUniqCustomerID() *Customer {
+	rand.Seed(time.Now().UnixNano())
+	min := 10000000
+	max := 30000000
+	valueString := strconv.Itoa(rand.Intn(max-min+1) + min)
+	c.customerID = "CUST" + valueString
+
+	return c
+}
+
+func (c *Customer) GetCustomerID() string {
+	return c.customerID
 }
 
 func (c *Customer) GetName() string {

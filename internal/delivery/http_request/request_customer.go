@@ -1,7 +1,7 @@
 package http_request
 
 type RequestCustomer struct {
-	UserID      int    `json:"user_id"`
+	CustomerID  string `json:"user_id"`
 	Name        string `json:"name"`
 	Alamat      string `json:"alamat"`
 	PhoneNumber string `json:"phone_number"`

@@ -10,7 +10,7 @@ import (
 func TestNewTransaction(t *testing.T) {
 	transaction, err := entity.NewTransaction(entity.DTOTransaction{
 		TransactionID: 1,
-		CustomerID:    3,
+		CustomerID:    "CUST-001",
 		ProductID:     5,
 		Quantity:      1,
 		Revenue:       5000000,

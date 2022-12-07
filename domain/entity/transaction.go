@@ -7,7 +7,7 @@ import (
 
 type Transaction struct {
 	transactionID int
-	customerID    int
+	customerID    string
 	productID     int
 	quantity      int
 	revenue       int
@@ -17,7 +17,7 @@ type Transaction struct {
 
 type DTOTransaction struct {
 	TransactionID int
-	CustomerID    int
+	CustomerID    string
 	ProductID     int
 	Quantity      int
 	Revenue       int
@@ -25,8 +25,14 @@ type DTOTransaction struct {
 	PurchaseDate  string
 }
 
+func (tr *Transaction) AddDataIDCustomer(customer *Customer) *Transaction {
+	tr.customerID = customer.customerID
+
+	return tr
+}
+
 func NewTransaction(dto DTOTransaction) (*Transaction, error) {
-	if dto.CustomerID == 0 {
+	if dto.CustomerID == "" {
 		return nil, errors.New("customer ID cannot be empty")
 	}
 	if dto.ProductID == 0 {
@@ -61,7 +67,7 @@ func (tr *Transaction) GetTransactionID() int {
 	return tr.transactionID
 }
 
-func (tr *Transaction) GetCustomerID() int {
+func (tr *Transaction) GetCustomerID() string {
 	return tr.customerID
 }
 

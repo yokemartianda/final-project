@@ -25,7 +25,7 @@ func (c *CustomerMysqlInteractor) InsertDataCustomer(ctx context.Context, dataCu
 	_, cancel := context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
 
-	insertQuery := "INSERT INTO customer (user_id, name, alamat, phone_number, created_time)" +
+	insertQuery := "INSERT INTO customer (customer_id, name, alamat, phone_number, created_time)" +
 		"VALUES(?, ?, ?, ?, ?)"
 
 	_, errMysql = c.db.Exec(insertQuery, dataCustomer.GetCustomerID(), dataCustomer.GetName(), dataCustomer.GetAlamat(), dataCustomer.GetPhoneNumber(), dataCustomer.GetCreatedTime())

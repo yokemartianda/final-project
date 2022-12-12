@@ -6,6 +6,7 @@ import (
 	"final-project/internal/delivery/http_request"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 func (c *CustomerHandler) StoreDataCustomer(w http.ResponseWriter, r *http.Request) {
@@ -23,15 +24,18 @@ func (c *CustomerHandler) StoreDataCustomer(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	customer, err := entity.NewCustomer(entity.DTOCustomer{
+	var date = time.Now()
 
-		Name:        "Putra",
-		Alamat:      "Medan",
-		PhoneNumber: "085261334644",
-		CreatedTime: "2019-08-07",
+	customer, err := entity.NewCustomer(entity.DTOCustomer{
+		Name:        req.Name,
+		Alamat:      req.Alamat,
+		PhoneNumber: req.PhoneNumber,
+		CreatedTime: date.Format("2006-01-02"),
 	})
+	customer.SetUniqCustomerID()
 
 	if err != nil {
+		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("Error build data"))
 		return

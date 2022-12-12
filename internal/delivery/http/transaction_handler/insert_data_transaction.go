@@ -21,22 +21,33 @@ func (tr *TransactionHandler) StoreDataTransaction(w http.ResponseWriter, r *htt
 		w.Write([]byte("Error decode data"))
 		return
 	}
+
+	listItems := make([]*entity.TransactionItems, 0)
+
+	for _, item := range req.TransactionItems {
+		transactionItem, _ := entity.NewTransactionItems(entity.DTOTransactionItems{
+			CriteriaID:  item.CriteriaID,
+			RevenueItem: item.RevenueItem,
+		})
+
+		listItems = append(listItems, transactionItem)
+	}
+
 	transaction, err := entity.NewTransaction(entity.DTOTransaction{
-		TransactionID: 0,
-		CustomerID:    "",
-		ProductID:     0,
-		Quantity:      0,
-		Revenue:       0,
-		CouponID:      "",
-		PurchaseDate:  "",
+		CustomerID:       req.CustomerID,
+		Revenue:          req.Revenue,
+		CouponID:         req.CouponID,
+		TransactionItems: listItems,
 	})
+
+	transaction.SetUniqTransactionID()
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("Error build data"))
 		return
 	}
-	errInsert := tr.repoTransaction.InsertDataTransaction(tr.ctx, transaction)
+	errInsert := tr.transactionUsecase.InsertDataTransaction(tr.ctx, transaction)
 	if errInsert != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(errInsert.Error()))

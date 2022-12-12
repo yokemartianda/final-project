@@ -2,27 +2,27 @@ package entity
 
 import (
 	"errors"
+	"math/rand"
+	"strconv"
 	"time"
 )
 
 type Transaction struct {
-	transactionID int
-	customerID    string
-	productID     int
-	quantity      int
-	revenue       int
-	couponID      string
-	purchaseDate  time.Time
+	transactionID    string
+	customerID       string
+	revenue          int
+	couponID         string
+	purchaseDate     time.Time
+	transactionItems []*TransactionItems
 }
 
 type DTOTransaction struct {
-	TransactionID int
-	CustomerID    string
-	ProductID     int
-	Quantity      int
-	Revenue       int
-	CouponID      string
-	PurchaseDate  string
+	TransactionID    string
+	CustomerID       string
+	Revenue          int
+	CouponID         string
+	PurchaseDate     string
+	TransactionItems []*TransactionItems
 }
 
 func (tr *Transaction) AddDataIDCustomer(customer *Customer) *Transaction {
@@ -35,12 +35,6 @@ func NewTransaction(dto DTOTransaction) (*Transaction, error) {
 	if dto.CustomerID == "" {
 		return nil, errors.New("customer ID cannot be empty")
 	}
-	if dto.ProductID == 0 {
-		return nil, errors.New("product ID cannot be empty")
-	}
-	if dto.Quantity == 0 {
-		return nil, errors.New("quantity cannot be empty")
-	}
 	if dto.Revenue == 0 {
 		return nil, errors.New("revenue cannot be empty")
 	}
@@ -51,32 +45,33 @@ func NewTransaction(dto DTOTransaction) (*Transaction, error) {
 	convertPurchaseDate, _ := time.Parse("2006-01-02", dto.PurchaseDate)
 
 	transaction := &Transaction{
-		transactionID: dto.TransactionID,
-		customerID:    dto.CustomerID,
-		productID:     dto.ProductID,
-		quantity:      dto.Quantity,
-		revenue:       dto.Revenue,
-		couponID:      dto.CouponID,
-		purchaseDate:  convertPurchaseDate,
+		transactionID:    dto.TransactionID,
+		customerID:       dto.CustomerID,
+		revenue:          dto.Revenue,
+		couponID:         dto.CouponID,
+		purchaseDate:     convertPurchaseDate,
+		transactionItems: dto.TransactionItems,
 	}
 
 	return transaction, nil
 }
 
-func (tr *Transaction) GetTransactionID() int {
+func (tr *Transaction) SetUniqTransactionID() *Transaction {
+	rand.Seed(time.Now().UnixNano())
+	min := 10000000
+	max := 99999999
+	valueString := strconv.Itoa(rand.Intn(max-min+1) + min)
+	tr.transactionID = "TRAX" + valueString
+
+	return tr
+}
+
+func (tr *Transaction) GetTransactionID() string {
 	return tr.transactionID
 }
 
 func (tr *Transaction) GetCustomerID() string {
 	return tr.customerID
-}
-
-func (tr *Transaction) GetProductID() int {
-	return tr.productID
-}
-
-func (tr *Transaction) GetQuantity() int {
-	return tr.quantity
 }
 
 func (tr *Transaction) GetRevenue() int {
@@ -89,4 +84,8 @@ func (tr *Transaction) GetCouponID() string {
 
 func (tr *Transaction) GetPurchaseDate() string {
 	return tr.purchaseDate.Format("2006-01-02")
+}
+
+func (tr *Transaction) GetTransactionItems() []*TransactionItems {
+	return tr.transactionItems
 }

@@ -6,5 +6,5 @@ import (
 )
 
 type InterfaceRepoTransaction interface {
-	InsertDataTransaction(ctx context.Context, dataTransaction *entity.Transaction) error
+	InsertDataTransaction(ctx context.Context, dataTransaction *entity.Transaction) (int64, error)
 }

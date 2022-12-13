@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"final-project/domain/entity"
 	"final-project/internal/delivery/http_request"
-	"fmt"
+	"final-project/internal/delivery/http_response/transaction_response"
 	"net/http"
 )
 
@@ -16,9 +16,10 @@ func (tr *TransactionHandler) StoreDataTransaction(w http.ResponseWriter, r *htt
 	errDecode := decoder.Decode(&req)
 
 	if errDecode != nil {
-		fmt.Println(errDecode)
+		respErr, _ := transaction_response.MapResponseTransaction(nil, http.StatusInternalServerError, "Error decode data")
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error decode data"))
+		w.Write(respErr)
 		return
 	}
 
@@ -37,22 +38,38 @@ func (tr *TransactionHandler) StoreDataTransaction(w http.ResponseWriter, r *htt
 		CustomerID:       req.CustomerID,
 		Revenue:          req.Revenue,
 		CouponID:         req.CouponID,
+		PurchaseDate:     req.PurchaseDate,
 		TransactionItems: listItems,
 	})
 
 	transaction.SetUniqTransactionID()
 
 	if err != nil {
+		respErr, _ := transaction_response.MapResponseTransaction(nil, http.StatusInternalServerError, "Error build data")
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error build data"))
+		w.Write(respErr)
 		return
 	}
 	errInsert := tr.transactionUsecase.InsertDataTransaction(tr.ctx, transaction)
 	if errInsert != nil {
+		respErr, _ := transaction_response.MapResponseTransaction(nil, http.StatusInternalServerError, errInsert.Error())
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(errInsert.Error()))
+		w.Write(respErr)
 		return
 	}
-	w.WriteHeader(200)
-	fmt.Fprint(w, "SUCCES INSERT DATA")
+
+	resp, errMap := transaction_response.MapResponseTransaction(nil, http.StatusOK, "SUCCESS INSERT DATA")
+	if errMap != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(errMap.Error()))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(resp)
+	return
 }

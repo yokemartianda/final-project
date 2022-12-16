@@ -40,3 +40,5 @@ func (c *CouponMysqlInteractor) InsertDataCoupon(ctx context.Context, dataCoupon
 	}
 	return nil
 }
+
+//

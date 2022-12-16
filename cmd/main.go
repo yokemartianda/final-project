@@ -29,6 +29,7 @@ func main() {
 	r.HandleFunc("/", ParamHandlerWithoutInput).Methods(http.MethodGet)
 	r.HandleFunc("/create-customer", handlerCustomer.StoreDataCustomer).Methods(http.MethodPost)
 	r.HandleFunc("/create-transaction", handlerTransaction.StoreDataTransaction).Methods(http.MethodPost)
+	r.HandleFunc("/list-transaction", handlerTransaction.GetListTransaction).Methods(http.MethodGet)
 
 	http.HandleFunc("/test", ParamHandlerWithoutInput)
 	fmt.Println("localhost:8080")

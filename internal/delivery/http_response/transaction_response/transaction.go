@@ -75,3 +75,45 @@ func MapResponseTransaction(dataTransaction *entity.Transaction, code int, messa
 
 	return respJson, nil
 }
+
+func MapResponseListTransaction(listTransaction []*entity.Transaction, code int, message string) ([]byte, error) {
+	listResp := make([]*ResponseTransactionJson, 0)
+	for _, data := range listTransaction {
+		listTransactionItem := make([]*ResponseTransactionItems, 0)
+		for _, dataItem := range data.GetTransactionItems() {
+			respItem := &ResponseTransactionItems{
+				TransactionID: dataItem.GetTransactionID(),
+				CriteriaID:    dataItem.GetCriteriaID(),
+				RevenueItem:   dataItem.GetRevenueItem(),
+			}
+
+			listTransactionItem = append(listTransactionItem, respItem)
+		}
+
+		resp := &ResponseTransactionJson{
+			TransactionID:    data.GetTransactionID(),
+			CustomerID:       data.GetCustomerID(),
+			Revenue:          data.GetRevenue(),
+			CouponID:         data.GetCouponID(),
+			PurchaseDate:     data.GetPurchaseDate(),
+			TransactionItems: listTransactionItem,
+		}
+
+		listResp = append(listResp, resp)
+	}
+
+	httpResponse := &CustomReponseCollection{
+		Status: &Status{
+			Code:    code,
+			Message: message,
+		},
+		Data: listResp,
+	}
+
+	respJson, err := json.Marshal(httpResponse)
+	if err != nil {
+		return nil, err
+	}
+
+	return respJson, nil
+}

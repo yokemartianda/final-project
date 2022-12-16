@@ -104,3 +104,5 @@ func MapResponseCoupon(dataCoupon *entity.Coupon, code int, message string) ([]b
 	}
 	return respJson, nil
 }
+
+//

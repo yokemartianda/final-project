@@ -21,3 +21,5 @@ func TestNewCoupon(t *testing.T) {
 	assert.Equal(t, "2023-11-28", coupon.GetExpiredDate())
 	assert.Nil(t, err)
 }
+
+//

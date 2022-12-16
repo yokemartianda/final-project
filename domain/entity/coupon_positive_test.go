@@ -10,7 +10,7 @@ import (
 func TestNewCoupon(t *testing.T) {
 	coupon, err := entity.NewCoupon(entity.DTOCoupon{
 		CouponID:    "ULTI-RND7821387123456",
-		CustomerID:  2,
+		CustomerID:  "s",
 		Discount:    30,
 		ExpiredDate: "2023-11-28",
 	})

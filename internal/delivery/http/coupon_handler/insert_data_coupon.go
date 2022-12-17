@@ -14,7 +14,7 @@ func (c *CouponHandler) StoreDataCoupon(w http.ResponseWriter, r *http.Request) 
 		decoder = json.NewDecoder(r.Body)
 	)
 
-	errDecode := decoder.Decode(req)
+	errDecode := decoder.Decode(&req)
 
 	if errDecode != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -24,7 +24,6 @@ func (c *CouponHandler) StoreDataCoupon(w http.ResponseWriter, r *http.Request) 
 
 	coupon, err := entity.NewCoupon(entity.DTOCoupon{
 		CouponID:    req.CouponID,
-		CustomerID:  req.CustomerID,
 		Discount:    req.Discount,
 		ExpiredDate: req.ExpiredDate,
 	})

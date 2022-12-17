@@ -13,6 +13,7 @@ type Customer struct {
 	alamat      string
 	phoneNumber string
 	createdTime time.Time
+	coupon      *Coupon
 }
 
 type DTOCustomer struct {
@@ -21,9 +22,13 @@ type DTOCustomer struct {
 	Alamat      string
 	PhoneNumber string
 	CreatedTime string
+	Coupon      *Coupon
 }
 
 func NewCustomer(dto DTOCustomer) (*Customer, error) {
+	if dto.Coupon == nil {
+		return nil, errors.New("COUPON TIDAK DITEMUKAN")
+	}
 	if dto.Name == "" {
 		return nil, errors.New("NAMA CANNOT BE EMPTY")
 	}
@@ -44,6 +49,7 @@ func NewCustomer(dto DTOCustomer) (*Customer, error) {
 		alamat:      dto.Alamat,
 		phoneNumber: dto.PhoneNumber,
 		createdTime: strCreatedTime,
+		coupon:      dto.Coupon,
 	}
 	return customer, nil
 }
@@ -77,4 +83,8 @@ func (c *Customer) GetPhoneNumber() string {
 
 func (c *Customer) GetCreatedTime() string {
 	return c.createdTime.Format("2006-01-02")
+}
+
+func (c *Customer) GetDataCoupon() *Coupon {
+	return c.coupon
 }

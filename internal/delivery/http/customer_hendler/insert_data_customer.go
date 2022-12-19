@@ -40,6 +40,7 @@ func (c *CustomerHandler) StoreDataCustomer(w http.ResponseWriter, r *http.Reque
 	var date = time.Now()
 
 	customer, err := entity.NewCustomer(entity.DTOCustomer{
+		CouponID: req.CustomerID,
 		CustomerID:  req.CustomerID,
 		Name:        req.Name,
 		Alamat:      req.Alamat,

@@ -24,13 +24,28 @@ func (c *CustomerHandler) StoreDataCustomer(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	coupon, errC := entity.NewCoupon(entity.DTOCoupon{
+		CouponID:    req.Coupon.CouponID,
+		Discount:    req.Coupon.Discount,
+		ExpiredDate: req.Coupon.ExpiredDate,
+	})
+
+	if errC != nil {
+		fmt.Println(errDecode)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(errC.Error()))
+		return
+	}
+
 	var date = time.Now()
 
 	customer, err := entity.NewCustomer(entity.DTOCustomer{
+		CustomerID:  req.CustomerID,
 		Name:        req.Name,
 		Alamat:      req.Alamat,
 		PhoneNumber: req.PhoneNumber,
 		CreatedTime: date.Format("2006-01-02"),
+		Coupon:      coupon,
 	})
 	customer.SetUniqCustomerID()
 

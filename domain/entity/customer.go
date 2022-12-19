@@ -65,6 +65,12 @@ func (c *Customer) SetUniqCustomerID() *Customer {
 	return c
 }
 
+func (c *Customer) AddDataCoupon(cou *Coupon) *Customer {
+	c.coupon = cou
+
+	return c
+}
+
 func (c *Customer) GetCustomerID() string {
 	return c.customerID
 }

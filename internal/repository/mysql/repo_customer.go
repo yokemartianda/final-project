@@ -5,11 +5,17 @@ import (
 	"database/sql"
 	"final-project/domain/entity"
 	"final-project/internal/repository/mysql/mapper"
+	"fmt"
 	"time"
 )
 
 type CustomerMysqlInteractor struct {
 	db *sql.DB
+}
+
+// GetCustomerById implements repository.InterfaceRepoCustomer
+func (*CustomerMysqlInteractor) GetCustomerById(ctx context.Context, customerid string) (*entity.Customer, error) {
+	panic("unimplemented")
 }
 
 func NewCustomerMysql(db *sql.DB) *CustomerMysqlInteractor {
@@ -99,4 +105,58 @@ func (c *CustomerMysqlInteractor) GetListCustomerCoupon(ctx context.Context) ([]
 	defer rows.Close()
 
 	return dataCustomerCollection, nil
+}
+
+func (c *CouponMysqlInteractor) GetCustomerById(ctx context.Context, kodecustomerId string) (*entity.Customer, error) {
+	var (
+		dataCustomer *entity.Customer
+		errMysql     error
+	)
+	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
+
+	defer cancel()
+
+	sqlQuery := fmt.Sprintf("SELECT a.customer_id,a.name,a.alamat,a.phone_number,a.created_date,b.*"+
+		"FROM customer a JOIN coupon b ON a.customer_id = b.id WHERE customer_id ='%s'", kodecustomerId)
+	rows, errMysql := c.db.QueryContext(ctx, sqlQuery)
+	if errMysql != nil {
+		return nil, errMysql
+	}
+	for rows.Next() {
+		var (
+			customerID  string
+			name        string
+			alamat      string
+			phoneNumber string
+			createdTime string
+			couponID    string
+			discount    int
+			expiredDate string
+		)
+
+		err := rows.Scan(&customerID, &name, &alamat, &phoneNumber, &createdTime, &couponID, &discount, &expiredDate)
+		if err != nil {
+			return nil, err
+		}
+		coupon, errCoupon := mapper.DataCouponDbToEntity(entity.DTOCoupon{
+			CouponID:    couponID,
+			Discount:    discount,
+			ExpiredDate: expiredDate,
+		})
+		if errCoupon != nil {
+			return nil, errCoupon
+		}
+
+		dataCustomer, _ = mapper.DataCustomerDbToEntity(entity.DTOCustomer{
+			CustomerID:  customerID,
+			Name:        name,
+			Alamat:      alamat,
+			PhoneNumber: phoneNumber,
+			CreatedTime: createdTime,
+			Coupon:      coupon,
+		})
+	}
+	defer rows.Close()
+
+	return dataCustomer, nil
 }

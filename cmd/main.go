@@ -13,10 +13,10 @@ import (
 )
 
 var (
-	connectionDatabase         = databasesql.InitMysqlDB()
-	customerRepositoryMysql    = mysql.NewCustomerMysql(connectionDatabase)
-	transactionRepositoryMysql = mysql.NewTransactionMysql(connectionDatabase)
-	// couponRepositoryMysql           = mysql.NewCouponMysql(connectionDatabase)
+	connectionDatabase              = databasesql.InitMysqlDB()
+	customerRepositoryMysql         = mysql.NewCustomerMysql(connectionDatabase)
+	transactionRepositoryMysql      = mysql.NewTransactionMysql(connectionDatabase)
+	couponRepositoryMysql           = mysql.NewCouponMysql(connectionDatabase)
 	transactionItemsRepositoryMysql = mysql.NewTransactionItemsMysql(connectionDatabase)
 	ctx                             = context.Background()
 )
@@ -24,13 +24,13 @@ var (
 func main() {
 	r := mux.NewRouter()
 
-	handlerCustomer := customer_hendler.NewCustomerHandler(ctx, customerRepositoryMysql)
+	handlerCustomer := customer_hendler.NewCustomerHandler(ctx, customerRepositoryMysql, couponRepositoryMysql)
 	handlerTransaction := transaction_handler.NewTransactionHandler(ctx, transactionRepositoryMysql, transactionItemsRepositoryMysql)
 	r.HandleFunc("/", ParamHandlerWithoutInput).Methods(http.MethodGet)
 	r.HandleFunc("/create-customer", handlerCustomer.StoreDataCustomer).Methods(http.MethodPost)
 	r.HandleFunc("/create-transaction", handlerTransaction.StoreDataTransaction).Methods(http.MethodPost)
-	r.HandleFunc("/list-transaction", handlerTransaction.GetListTransaction).Methods(http.MethodGet)
-	// r.HandleFunc("/list-customer-coupon",handlerTransaction.G)
+	//r.HandleFunc("/list-transaction", handlerTransaction.GetListTransaction).Methods(http.MethodGet)
+	r.HandleFunc("/list-customer-coupon", handlerCustomer.GetListCustomerCoupon).Methods(http.MethodGet)
 
 	http.HandleFunc("/test", ParamHandlerWithoutInput)
 	fmt.Println("localhost:8080")

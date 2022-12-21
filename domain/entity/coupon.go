@@ -10,6 +10,7 @@ type Coupon struct {
 	types       string
 	expiredDate time.Time
 	customerID  string
+	status      int
 }
 
 type DTOCoupon struct {
@@ -17,6 +18,7 @@ type DTOCoupon struct {
 	Types       string
 	ExpiredDate string
 	CustomerID  string
+	Status      int
 }
 
 func NewCoupon(dto DTOCoupon) (*Coupon, error) {
@@ -34,6 +36,7 @@ func NewCoupon(dto DTOCoupon) (*Coupon, error) {
 		types:       dto.Types,
 		expiredDate: convertExpiredDate,
 		customerID:  dto.CustomerID,
+		status:      dto.Status,
 	}
 
 	return coupon, nil
@@ -48,6 +51,10 @@ func (c *Coupon) GetTypes() string {
 }
 func (c *Coupon) GetCustomerID() string {
 	return c.customerID
+}
+
+func (c *Coupon) GetStatus() int {
+	return c.status
 }
 
 func (c *Coupon) GetExpiredDate() string {

@@ -30,10 +30,10 @@ func (c *CouponMysqlInteractor) InsertDataCoupon(ctx context.Context, dataCoupon
 	_, cancel := context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
 
-	insertQuery := "INSERT INTO coupon (coupon_id, types, expired_date, customer_id)" +
-		"VALUES(?, ?, ?, ?)"
+	insertQuery := "INSERT INTO coupon (coupon_id, types, expired_date, customer_id, status)" +
+		"VALUES(?, ?, ?, ?, ?)"
 
-	_, errMysql = c.db.Exec(insertQuery, dataCoupon.GetCouponID(), dataCoupon.GetTypes(), dataCoupon.GetExpiredDate(), dataCoupon.GetCustomerID())
+	_, errMysql = c.db.Exec(insertQuery, dataCoupon.GetCouponID(), dataCoupon.GetTypes(), dataCoupon.GetExpiredDate(), dataCoupon.GetCustomerID(), dataCoupon.GetStatus())
 
 	if errMysql != nil {
 		return errMysql

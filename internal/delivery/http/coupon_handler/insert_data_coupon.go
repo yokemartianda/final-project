@@ -27,6 +27,7 @@ func (c *CouponHandler) StoreDataCoupon(w http.ResponseWriter, r *http.Request) 
 		Types:       req.Types,
 		ExpiredDate: req.ExpiredDate,
 		CustomerID:  req.CustomerID,
+		Status:      req.Status,
 	})
 
 	if err != nil {

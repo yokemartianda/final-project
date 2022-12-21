@@ -12,6 +12,7 @@ func TestNewCoupon(t *testing.T) {
 		CouponID:    "ULTI-RND7821387123456",
 		Types:       "ULTI",
 		ExpiredDate: "2023-11-28",
+		Status:      1,
 	})
 
 	assert.Equal(t, "ULTI-RND7821387123456", coupon.GetCouponID())

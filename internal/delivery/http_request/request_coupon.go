@@ -5,4 +5,5 @@ type RequestCoupon struct {
 	Types       string `json:"types"`
 	ExpiredDate string `json:"expired_date"`
 	CustomerID  string `json:"customer_id"`
+	Status      int    `json:"status"`
 }

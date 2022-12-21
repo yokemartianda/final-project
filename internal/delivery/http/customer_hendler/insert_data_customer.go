@@ -24,31 +24,14 @@ func (c *CustomerHandler) StoreDataCustomer(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	coupon, errC := entity.NewCoupon(entity.DTOCoupon{
-		CouponID:    req.Coupon.CouponID,
-		Types:       req.Coupon.Types,
-		ExpiredDate: req.Coupon.ExpiredDate,
-	})
-
-	if errC != nil {
-		fmt.Println(errDecode)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(errC.Error()))
-		return
-	}
-
 	var date = time.Now()
 
 	customer, err := entity.NewCustomer(entity.DTOCustomer{
-		CouponID:    req.CustomerID,
-		CustomerID:  req.CustomerID,
 		Name:        req.Name,
 		Alamat:      req.Alamat,
 		PhoneNumber: req.PhoneNumber,
 		CreatedTime: date.Format("2006-01-02"),
-		Coupon:      coupon,
 	})
-	customer.SetUniqCustomerID()
 
 	if err != nil {
 		fmt.Println(err)
@@ -56,6 +39,7 @@ func (c *CustomerHandler) StoreDataCustomer(w http.ResponseWriter, r *http.Reque
 		w.Write([]byte("Error build data"))
 		return
 	}
+	customer.SetUniqCustomerID()
 
 	errInsert := c.repoCustomer.InsertDataCustomer(c.ctx, customer)
 	if errInsert != nil {

@@ -28,9 +28,6 @@ type DTOCustomer struct {
 }
 
 func NewCustomer(dto DTOCustomer) (*Customer, error) {
-	if dto.Coupon == nil {
-		return nil, errors.New("COUPON TIDAK DITEMUKAN")
-	}
 	if dto.Name == "" {
 		return nil, errors.New("NAMA CANNOT BE EMPTY")
 	}

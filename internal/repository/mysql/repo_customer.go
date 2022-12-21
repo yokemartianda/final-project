@@ -32,10 +32,10 @@ func (c *CustomerMysqlInteractor) InsertDataCustomer(ctx context.Context, dataCu
 	_, cancel := context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
 
-	insertQuery := "INSERT INTO customer (coupon_id, customer_id, name, alamat, phone_number, created_time)" +
-		"VALUES(?, ?, ?, ?, ?, ?)"
+	insertQuery := "INSERT INTO customer (customer_id, name, alamat, phone_number, created_time)" +
+		"VALUES( ?, ?, ?, ?, ?)"
 
-	_, errMysql = c.db.Exec(insertQuery, dataCustomer.GetCouponID(), dataCustomer.GetCustomerID(), dataCustomer.GetName(), dataCustomer.GetAlamat(), dataCustomer.GetPhoneNumber(), dataCustomer.GetCreatedTime())
+	_, errMysql = c.db.Exec(insertQuery, dataCustomer.GetCustomerID(), dataCustomer.GetName(), dataCustomer.GetAlamat(), dataCustomer.GetPhoneNumber(), dataCustomer.GetCreatedTime())
 
 	if errMysql != nil {
 		return errMysql

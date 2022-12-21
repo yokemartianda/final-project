@@ -7,19 +7,21 @@ import (
 
 type Coupon struct {
 	couponID    string
-	discount    int
+	types       string
 	expiredDate time.Time
+	customerID  string
 }
 
 type DTOCoupon struct {
 	CouponID    string
-	Discount    int
+	Types       string
 	ExpiredDate string
+	CustomerID  string
 }
 
 func NewCoupon(dto DTOCoupon) (*Coupon, error) {
-	if dto.Discount == 0 {
-		return nil, errors.New("discount cannot be empty")
+	if dto.Types == "" {
+		return nil, errors.New("Type cannot be empty")
 	}
 	if dto.ExpiredDate == "" {
 		return nil, errors.New("expired date cannot be empty")
@@ -29,8 +31,9 @@ func NewCoupon(dto DTOCoupon) (*Coupon, error) {
 
 	coupon := &Coupon{
 		couponID:    dto.CouponID,
-		discount:    dto.Discount,
+		types:       dto.Types,
 		expiredDate: convertExpiredDate,
+		customerID:  dto.CustomerID,
 	}
 
 	return coupon, nil
@@ -40,8 +43,11 @@ func (c *Coupon) GetCouponID() string {
 	return c.couponID
 }
 
-func (c *Coupon) GetDiscount() int {
-	return c.discount
+func (c *Coupon) GetTypes() string {
+	return c.types
+}
+func (c *Coupon) GetCustomerID() string {
+	return c.customerID
 }
 
 func (c *Coupon) GetExpiredDate() string {

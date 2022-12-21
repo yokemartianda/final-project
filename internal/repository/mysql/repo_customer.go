@@ -32,10 +32,10 @@ func (c *CustomerMysqlInteractor) InsertDataCustomer(ctx context.Context, dataCu
 	_, cancel := context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
 
-	insertQuery := "INSERT INTO customer (customer_id, name, alamat, phone_number, created_time, coupon_id)" +
+	insertQuery := "INSERT INTO customer (coupon_id, customer_id, name, alamat, phone_number, created_time)" +
 		"VALUES(?, ?, ?, ?, ?, ?)"
 
-	_, errMysql = c.db.Exec(insertQuery, dataCustomer.GetCustomerID(), dataCustomer.GetName(), dataCustomer.GetAlamat(), dataCustomer.GetPhoneNumber(), dataCustomer.GetCreatedTime(), dataCustomer.GetDataCoupon().GetCouponID())
+	_, errMysql = c.db.Exec(insertQuery, dataCustomer.GetCouponID(), dataCustomer.GetCustomerID(), dataCustomer.GetName(), dataCustomer.GetAlamat(), dataCustomer.GetPhoneNumber(), dataCustomer.GetCreatedTime())
 
 	if errMysql != nil {
 		return errMysql
@@ -69,17 +69,17 @@ func (c *CustomerMysqlInteractor) GetListCustomerCoupon(ctx context.Context) ([]
 			phoneNumber string
 			createdTime string
 			couponID    string
-			discount    int
+			types       string
 			expiredDate string
 		)
 
-		err := rows.Scan(&customerID, &name, &alamat, &phoneNumber, &createdTime, &couponID, &discount, &expiredDate)
+		err := rows.Scan(&customerID, &name, &alamat, &phoneNumber, &createdTime, &couponID, &types, &expiredDate)
 		if err != nil {
 			return nil, err
 		}
 		coupon, errCoupon := mapper.DataCouponDbToEntity(entity.DTOCoupon{
 			CouponID:    couponID,
-			Discount:    discount,
+			Types:       types,
 			ExpiredDate: expiredDate,
 		})
 		if errCoupon != nil {
@@ -130,17 +130,17 @@ func (c *CouponMysqlInteractor) GetCustomerById(ctx context.Context, kodecustome
 			phoneNumber string
 			createdTime string
 			couponID    string
-			discount    int
+			types       string
 			expiredDate string
 		)
 
-		err := rows.Scan(&customerID, &name, &alamat, &phoneNumber, &createdTime, &couponID, &discount, &expiredDate)
+		err := rows.Scan(&customerID, &name, &alamat, &phoneNumber, &createdTime, &couponID, &types, &expiredDate)
 		if err != nil {
 			return nil, err
 		}
 		coupon, errCoupon := mapper.DataCouponDbToEntity(entity.DTOCoupon{
 			CouponID:    couponID,
-			Discount:    discount,
+			Types:       types,
 			ExpiredDate: expiredDate,
 		})
 		if errCoupon != nil {

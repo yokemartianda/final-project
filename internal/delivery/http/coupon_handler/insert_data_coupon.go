@@ -24,8 +24,9 @@ func (c *CouponHandler) StoreDataCoupon(w http.ResponseWriter, r *http.Request) 
 
 	coupon, err := entity.NewCoupon(entity.DTOCoupon{
 		CouponID:    req.CouponID,
-		Discount:    req.Discount,
+		Types:       req.Types,
 		ExpiredDate: req.ExpiredDate,
+		CustomerID:  req.CustomerID,
 	})
 
 	if err != nil {

@@ -6,6 +6,6 @@ import (
 )
 
 type InterfaceRepoCoupon interface {
-	InsertDataCoupon(ctx context.Context, dataCustomer *entity.Coupon) error
+	InsertDataCoupon(ctx context.Context, dataCoupon *entity.Coupon) error
 	GetCouponById(ctx context.Context, id_coupon string) (*entity.Coupon, error)
 }

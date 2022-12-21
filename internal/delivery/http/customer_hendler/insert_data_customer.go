@@ -26,7 +26,7 @@ func (c *CustomerHandler) StoreDataCustomer(w http.ResponseWriter, r *http.Reque
 
 	coupon, errC := entity.NewCoupon(entity.DTOCoupon{
 		CouponID:    req.Coupon.CouponID,
-		Discount:    req.Coupon.Discount,
+		Types:       req.Coupon.Types,
 		ExpiredDate: req.Coupon.ExpiredDate,
 	})
 
@@ -40,7 +40,7 @@ func (c *CustomerHandler) StoreDataCustomer(w http.ResponseWriter, r *http.Reque
 	var date = time.Now()
 
 	customer, err := entity.NewCustomer(entity.DTOCustomer{
-		CouponID: req.CustomerID,
+		CouponID:    req.CustomerID,
 		CustomerID:  req.CustomerID,
 		Name:        req.Name,
 		Alamat:      req.Alamat,

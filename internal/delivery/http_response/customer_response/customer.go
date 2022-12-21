@@ -30,8 +30,9 @@ type RequestCustomer struct {
 
 type RequestCoupon struct {
 	CouponID    string `json:"coupon_id"`
-	Discount    int    `json:"discount"`
+	Types       string `json:"discount"`
 	ExpiredDate string `json:"expired_date"`
+	CustomerID  string `json:"customer_id"`
 }
 
 func MapResponseListCustomer(dataCustomer []*entity.Customer, code int, message string) ([]byte, error) {
@@ -45,8 +46,9 @@ func MapResponseListCustomer(dataCustomer []*entity.Customer, code int, message 
 			CreatedTime: data.GetCreatedTime(),
 			Coupon: &RequestCoupon{
 				CouponID:    data.GetDataCoupon().GetCouponID(),
-				Discount:    data.GetDataCoupon().GetDiscount(),
+				Types:       data.GetDataCoupon().GetTypes(),
 				ExpiredDate: data.GetDataCoupon().GetExpiredDate(),
+				CustomerID:  data.GetDataCoupon().GetCustomerID(),
 			},
 		}
 		listResp = append(listResp, resp)

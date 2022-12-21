@@ -89,3 +89,8 @@ func (tr *Transaction) GetPurchaseDate() string {
 func (tr *Transaction) GetTransactionItems() []*TransactionItems {
 	return tr.transactionItems
 }
+
+func (tr *Transaction) SetTransactionItems(transactionItems []*TransactionItems) *Transaction {
+	tr.transactionItems = transactionItems
+	return tr
+}

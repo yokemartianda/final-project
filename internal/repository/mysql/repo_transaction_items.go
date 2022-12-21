@@ -37,3 +37,51 @@ func (m *TransactionItemsMysqlInteractor) InsertDataTransactionItems(ctx context
 
 	return nil
 }
+
+func (m *TransactionItemsMysqlInteractor) GetItemsByTransactionID(ctx context.Context, transaction_id string) ([]*entity.TransactionItems, error) {
+	var (
+		errMysql error
+	)
+
+	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
+
+	defer cancel()
+
+	sqlQuery := "SELECT item_id, transaction_id, criteria_id, revenue_item, date_created FROM transaction_items WHERE transaction_id = ?"
+	rows, errMysql := m.db.QueryContext(ctx, sqlQuery, transaction_id)
+	if errMysql != nil {
+		return nil, errMysql
+	}
+
+	itemsCollection := make([]*entity.TransactionItems, 0)
+	for rows.Next() {
+		var (
+			item_id       int
+			transactionID string
+			criteria_id   int
+			revenue_item  int
+			date_created  string
+		)
+
+		errTransaction := rows.Scan(&item_id, &transactionID, &criteria_id, &revenue_item, &date_created)
+
+		if errTransaction != nil {
+			return nil, errTransaction
+		}
+		item, errNewItem := entity.NewTransactionItems(entity.DTOTransactionItems{
+			ItemID:        item_id,
+			TransactionID: transactionID,
+			CriteriaID:    criteria_id,
+			RevenueItem:   revenue_item,
+			DateCreated:   date_created,
+		})
+
+		if errNewItem != nil {
+			return nil, errNewItem
+		}
+		itemsCollection = append(itemsCollection, item)
+	}
+	defer rows.Close()
+
+	return itemsCollection, nil
+}

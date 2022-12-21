@@ -33,7 +33,7 @@ func main() {
 	r.HandleFunc("/create-customer", handlerCustomer.StoreDataCustomer).Methods(http.MethodPost)
 	r.HandleFunc("/create-coupon", handlerCoupon.StoreDataCoupon).Methods(http.MethodPost)
 	r.HandleFunc("/create-transaction", handlerTransaction.StoreDataTransaction).Methods(http.MethodPost)
-	//r.HandleFunc("/list-transaction", handlerTransaction.GetListTransaction).Methods(http.MethodGet)
+	r.HandleFunc("/list-transaction", handlerTransaction.GetListTransaction).Methods(http.MethodGet)
 	r.HandleFunc("/list-customer-coupon", handlerCustomer.GetListCustomerCoupon).Methods(http.MethodGet)
 
 	http.HandleFunc("/test", ParamHandlerWithoutInput)

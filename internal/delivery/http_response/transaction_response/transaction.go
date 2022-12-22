@@ -18,6 +18,7 @@ type ResponseTransactionJson struct {
 type ResponseTransactionItems struct {
 	TransactionID string `json:"transaction_id"`
 	CriteriaID    int    `json:"criteria_id"`
+	CriteriaName  string `json:"criteria_name"`
 	RevenueItem   int    `json:"revenue_item"`
 }
 
@@ -45,6 +46,7 @@ func MapResponseTransaction(dataTransaction *entity.Transaction, code int, messa
 			transactionItem := &ResponseTransactionItems{
 				TransactionID: item.GetTransactionID(),
 				CriteriaID:    item.GetCriteriaID(),
+				CriteriaName:  item.GetCriteriaName(),
 				RevenueItem:   item.GetRevenueItem(),
 			}
 
@@ -86,6 +88,7 @@ func MapResponseListTransaction(listTransaction []*entity.Transaction, code int,
 			respItem := &ResponseTransactionItems{
 				TransactionID: dataItem.GetTransactionID(),
 				CriteriaID:    dataItem.GetCriteriaID(),
+				CriteriaName:  dataItem.GetCriteriaName(),
 				RevenueItem:   dataItem.GetRevenueItem(),
 			}
 

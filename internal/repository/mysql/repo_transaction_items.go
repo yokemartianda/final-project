@@ -47,7 +47,8 @@ func (m *TransactionItemsMysqlInteractor) GetItemsByTransactionID(ctx context.Co
 
 	defer cancel()
 
-	sqlQuery := "SELECT item_id, transaction_id, criteria_id, revenue_item, date_created FROM transaction_items WHERE transaction_id = ?"
+	sqlQuery := "SELECT item_id, transaction_id, transaction_items.criteria_id, criteria.criteria_name, revenue_item, date_created FROM transaction_items " +
+		" LEFT JOIN criteria ON transaction_items.criteria_id = criteria.criteria_id WHERE transaction_id = ?"
 	rows, errMysql := m.db.QueryContext(ctx, sqlQuery, transaction_id)
 	if errMysql != nil {
 		return nil, errMysql
@@ -59,11 +60,12 @@ func (m *TransactionItemsMysqlInteractor) GetItemsByTransactionID(ctx context.Co
 			item_id       int
 			transactionID string
 			criteria_id   int
+			criteria_name string
 			revenue_item  int
 			date_created  string
 		)
 
-		errTransaction := rows.Scan(&item_id, &transactionID, &criteria_id, &revenue_item, &date_created)
+		errTransaction := rows.Scan(&item_id, &transactionID, &criteria_id, &criteria_name, &revenue_item, &date_created)
 
 		if errTransaction != nil {
 			return nil, errTransaction
@@ -72,6 +74,7 @@ func (m *TransactionItemsMysqlInteractor) GetItemsByTransactionID(ctx context.Co
 			ItemID:        item_id,
 			TransactionID: transactionID,
 			CriteriaID:    criteria_id,
+			CriteriaName:  criteria_name,
 			RevenueItem:   revenue_item,
 			DateCreated:   date_created,
 		})

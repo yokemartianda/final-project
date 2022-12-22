@@ -13,7 +13,7 @@ type Customer struct {
 	alamat      string
 	phoneNumber string
 	createdTime time.Time
-	coupon      *Coupon
+	coupon      []*Coupon
 }
 
 type DTOCustomer struct {
@@ -22,7 +22,7 @@ type DTOCustomer struct {
 	Alamat      string
 	PhoneNumber string
 	CreatedTime string
-	Coupon      *Coupon
+	Coupon      []*Coupon
 }
 
 func NewCustomer(dto DTOCustomer) (*Customer, error) {
@@ -46,7 +46,6 @@ func NewCustomer(dto DTOCustomer) (*Customer, error) {
 		alamat:      dto.Alamat,
 		phoneNumber: dto.PhoneNumber,
 		createdTime: strCreatedTime,
-		coupon:      dto.Coupon,
 	}
 	return customer, nil
 }
@@ -62,7 +61,7 @@ func (c *Customer) SetUniqCustomerID() *Customer {
 	return c
 }
 
-func (c *Customer) AddDataCoupon(cou *Coupon) *Customer {
+func (c *Customer) AddDataCoupon(cou []*Coupon) *Customer {
 	c.coupon = cou
 
 	return c
@@ -88,6 +87,6 @@ func (c *Customer) GetCreatedTime() string {
 	return c.createdTime.Format("2006-01-02")
 }
 
-func (c *Customer) GetDataCoupon() *Coupon {
+func (c *Customer) GetDataCoupon() []*Coupon {
 	return c.coupon
 }

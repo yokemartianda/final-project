@@ -8,7 +8,6 @@ import (
 )
 
 type Customer struct {
-	couponID    string
 	customerID  string
 	name        string
 	alamat      string
@@ -18,7 +17,6 @@ type Customer struct {
 }
 
 type DTOCustomer struct {
-	CouponID    string
 	CustomerID  string
 	Name        string
 	Alamat      string
@@ -43,7 +41,6 @@ func NewCustomer(dto DTOCustomer) (*Customer, error) {
 	strCreatedTime, _ := time.Parse("2006-01-02", dto.CreatedTime)
 
 	customer := &Customer{
-		couponID:    dto.CouponID,
 		customerID:  dto.CustomerID,
 		name:        dto.Name,
 		alamat:      dto.Alamat,
@@ -92,8 +89,4 @@ func (c *Customer) GetCreatedTime() string {
 
 func (c *Customer) GetDataCoupon() []*Coupon {
 	return c.coupon
-}
-
-func (c *Customer) GetCouponID() string {
-	return c.couponID
 }

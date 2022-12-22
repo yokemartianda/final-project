@@ -8,6 +8,7 @@ import (
 type ResponseTransactionJson struct {
 	TransactionID    string                      `json:"transaction_id"`
 	CustomerID       string                      `json:"customer_id"`
+	CustomerName     string                      `json:"customer_name"`
 	Revenue          int                         `json:"revenue"`
 	CouponID         string                      `json:"coupon_id"`
 	PurchaseDate     string                      `json:"purchase_date"`
@@ -17,6 +18,7 @@ type ResponseTransactionJson struct {
 type ResponseTransactionItems struct {
 	TransactionID string `json:"transaction_id"`
 	CriteriaID    int    `json:"criteria_id"`
+	CriteriaName  string `json:"criteria_name"`
 	RevenueItem   int    `json:"revenue_item"`
 }
 
@@ -44,6 +46,7 @@ func MapResponseTransaction(dataTransaction *entity.Transaction, code int, messa
 			transactionItem := &ResponseTransactionItems{
 				TransactionID: item.GetTransactionID(),
 				CriteriaID:    item.GetCriteriaID(),
+				CriteriaName:  item.GetCriteriaName(),
 				RevenueItem:   item.GetRevenueItem(),
 			}
 
@@ -53,6 +56,7 @@ func MapResponseTransaction(dataTransaction *entity.Transaction, code int, messa
 		resp = &ResponseTransactionJson{
 			TransactionID:    dataTransaction.GetTransactionID(),
 			CustomerID:       dataTransaction.GetCustomerID(),
+			CustomerName:     dataTransaction.GetCustomerName(),
 			Revenue:          dataTransaction.GetRevenue(),
 			CouponID:         dataTransaction.GetCouponID(),
 			PurchaseDate:     dataTransaction.GetPurchaseDate(),
@@ -84,6 +88,7 @@ func MapResponseListTransaction(listTransaction []*entity.Transaction, code int,
 			respItem := &ResponseTransactionItems{
 				TransactionID: dataItem.GetTransactionID(),
 				CriteriaID:    dataItem.GetCriteriaID(),
+				CriteriaName:  dataItem.GetCriteriaName(),
 				RevenueItem:   dataItem.GetRevenueItem(),
 			}
 
@@ -93,6 +98,7 @@ func MapResponseListTransaction(listTransaction []*entity.Transaction, code int,
 		resp := &ResponseTransactionJson{
 			TransactionID:    data.GetTransactionID(),
 			CustomerID:       data.GetCustomerID(),
+			CustomerName:     data.GetCustomerName(),
 			Revenue:          data.GetRevenue(),
 			CouponID:         data.GetCouponID(),
 			PurchaseDate:     data.GetPurchaseDate(),

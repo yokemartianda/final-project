@@ -35,8 +35,8 @@ func (tr *TransactionHandler) StoreDataTransaction(w http.ResponseWriter, r *htt
 	}
 
 	transaction, err := entity.NewTransaction(entity.DTOTransaction{
-		CustomerID:       req.CustomerID,
-		Revenue:          req.Revenue,
+		CustomerID: req.CustomerID,
+		// Revenue:          req.Revenue,
 		CouponID:         req.CouponID,
 		PurchaseDate:     req.PurchaseDate,
 		TransactionItems: listItems,

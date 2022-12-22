@@ -13,11 +13,6 @@ type CustomerMysqlInteractor struct {
 	db *sql.DB
 }
 
-// GetCustomerById implements repository.InterfaceRepoCustomer
-func (*CustomerMysqlInteractor) GetCustomerById(ctx context.Context, customerid string) (*entity.Customer, error) {
-	panic("unimplemented")
-}
-
 func NewCustomerMysql(db *sql.DB) *CustomerMysqlInteractor {
 	return &CustomerMysqlInteractor{
 		db: db,
@@ -94,7 +89,7 @@ func (c *CustomerMysqlInteractor) GetListCustomer(ctx context.Context) ([]*entit
 	return dataCustomerCollection, nil
 }
 
-func (c *CouponMysqlInteractor) GetCustomerById(ctx context.Context, customer_id string) (*entity.Customer, error) {
+func (c *CustomerMysqlInteractor) GetCustomerById(ctx context.Context, customer_id string) (*entity.Customer, error) {
 	var (
 		errMysql    error
 		customerid  string

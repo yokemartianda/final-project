@@ -44,7 +44,7 @@ func (c *CustomerMysqlInteractor) InsertDataCustomer(ctx context.Context, dataCu
 	return nil
 }
 
-func (c *CustomerMysqlInteractor) GetListCustomerCoupon(ctx context.Context) ([]*entity.Customer, error) {
+func (c *CustomerMysqlInteractor) GetListCustomer(ctx context.Context) ([]*entity.Customer, error) {
 	var (
 		errMysql error
 	)
@@ -52,8 +52,7 @@ func (c *CustomerMysqlInteractor) GetListCustomerCoupon(ctx context.Context) ([]
 
 	defer cancel()
 
-	sqlQuery := "SELECT a.customer_id,a.name,a.alamat,a.phone_number,a.created_date,b.*" +
-		"FROM customer a JOIN coupon b ON a.customer_id = b.id"
+	sqlQuery := "SELECT customer_id, name, alamat, phone_number, created_time FROM customer"
 	rows, errMysql := c.db.QueryContext(ctx, sqlQuery)
 
 	if errMysql != nil {
@@ -68,22 +67,11 @@ func (c *CustomerMysqlInteractor) GetListCustomerCoupon(ctx context.Context) ([]
 			alamat      string
 			phoneNumber string
 			createdTime string
-			couponID    string
-			types       string
-			expiredDate string
 		)
 
-		err := rows.Scan(&customerID, &name, &alamat, &phoneNumber, &createdTime, &couponID, &types, &expiredDate)
+		err := rows.Scan(&customerID, &name, &alamat, &phoneNumber, &createdTime)
 		if err != nil {
 			return nil, err
-		}
-		coupon, errCoupon := mapper.DataCouponDbToEntity(entity.DTOCoupon{
-			CouponID:    couponID,
-			Types:       types,
-			ExpiredDate: expiredDate,
-		})
-		if errCoupon != nil {
-			return nil, errCoupon
 		}
 
 		dataCustomer, errCustomer := mapper.DataCustomerDbToEntity(entity.DTOCustomer{
@@ -92,7 +80,6 @@ func (c *CustomerMysqlInteractor) GetListCustomerCoupon(ctx context.Context) ([]
 			Alamat:      alamat,
 			PhoneNumber: phoneNumber,
 			CreatedTime: createdTime,
-			Coupon:      coupon,
 		})
 
 		if errCustomer != nil {
@@ -107,56 +94,34 @@ func (c *CustomerMysqlInteractor) GetListCustomerCoupon(ctx context.Context) ([]
 	return dataCustomerCollection, nil
 }
 
-func (c *CouponMysqlInteractor) GetCustomerById(ctx context.Context, kodecustomerId string) (*entity.Customer, error) {
+func (c *CouponMysqlInteractor) GetCustomerById(ctx context.Context, customer_id string) (*entity.Customer, error) {
 	var (
-		dataCustomer *entity.Customer
-		errMysql     error
+		errMysql    error
+		customerid  string
+		name        string
+		alamat      string
+		phoneNumber string
+		createdTime string
 	)
-	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
+	_, cancel := context.WithTimeout(ctx, 60*time.Second)
 
 	defer cancel()
-
-	sqlQuery := fmt.Sprintf("SELECT a.customer_id,a.name,a.alamat,a.phone_number,a.created_date,b.*"+
-		"FROM customer a JOIN coupon b ON a.customer_id = b.id WHERE customer_id ='%s'", kodecustomerId)
-	rows, errMysql := c.db.QueryContext(ctx, sqlQuery)
+	fmt.Println(customer_id)
+	sqlQuery := "SELECT customer_id, name, alamat, phone_number, created_time FROM customer WHERE customer_id = ?"
+	errMysql = c.db.QueryRowContext(ctx, sqlQuery, customer_id).Scan(&customerid, &name, &alamat, &phoneNumber, &createdTime)
 	if errMysql != nil {
 		return nil, errMysql
 	}
-	for rows.Next() {
-		var (
-			customerID  string
-			name        string
-			alamat      string
-			phoneNumber string
-			createdTime string
-			couponID    string
-			types       string
-			expiredDate string
-		)
-
-		err := rows.Scan(&customerID, &name, &alamat, &phoneNumber, &createdTime, &couponID, &types, &expiredDate)
-		if err != nil {
-			return nil, err
-		}
-		coupon, errCoupon := mapper.DataCouponDbToEntity(entity.DTOCoupon{
-			CouponID:    couponID,
-			Types:       types,
-			ExpiredDate: expiredDate,
-		})
-		if errCoupon != nil {
-			return nil, errCoupon
-		}
-
-		dataCustomer, _ = mapper.DataCustomerDbToEntity(entity.DTOCustomer{
-			CustomerID:  customerID,
-			Name:        name,
-			Alamat:      alamat,
-			PhoneNumber: phoneNumber,
-			CreatedTime: createdTime,
-			Coupon:      coupon,
-		})
+	dataCustomer, errCustomer := entity.NewCustomer(entity.DTOCustomer{
+		CustomerID:  customer_id,
+		Name:        name,
+		Alamat:      alamat,
+		PhoneNumber: phoneNumber,
+		CreatedTime: createdTime,
+	})
+	if errCustomer != nil {
+		return nil, errCustomer
 	}
-	defer rows.Close()
 
 	return dataCustomer, nil
 }

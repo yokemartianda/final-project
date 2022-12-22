@@ -6,5 +6,6 @@ import (
 )
 
 type CustomerService interface {
-	GetListCustomerCoupon(ctx context.Context, include string) ([]*entity.Customer, error)
+	GetCustomerById(ctx context.Context, customer_id string) (*entity.Customer, error)
+	GetListCustomer(ctx context.Context) ([]*entity.Customer, error)
 }

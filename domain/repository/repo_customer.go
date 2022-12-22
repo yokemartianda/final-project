@@ -7,6 +7,6 @@ import (
 
 type InterfaceRepoCustomer interface {
 	InsertDataCustomer(ctx context.Context, dataCustomer *entity.Customer) error
-	GetListCustomerCoupon(ctx context.Context) ([]*entity.Customer, error)
-	GetCustomerById(ctx context.Context, customerid string) (*entity.Customer, error)
+	GetListCustomer(ctx context.Context) ([]*entity.Customer, error)
+	GetCustomerById(ctx context.Context, costumer_id string) (*entity.Customer, error)
 }

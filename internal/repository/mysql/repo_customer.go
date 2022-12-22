@@ -68,6 +68,11 @@ func (c *CustomerMysqlInteractor) GetListCustomer(ctx context.Context) ([]*entit
 		if err != nil {
 			return nil, err
 		}
+		dateParse, errParse := time.Parse("2006-01-02T15:04:05-07:00", createdTime)
+		if errParse != nil {
+			return nil, errParse
+		}
+		createdTime = dateParse.Format("2006-01-02")
 
 		dataCustomer, errCustomer := mapper.DataCustomerDbToEntity(entity.DTOCustomer{
 			CustomerID:  customerID,
@@ -107,6 +112,12 @@ func (c *CustomerMysqlInteractor) GetCustomerById(ctx context.Context, customer_
 	if errMysql != nil {
 		return nil, errMysql
 	}
+	dateParse, errParse := time.Parse("2006-01-02T15:04:05-07:00", createdTime)
+	if errParse != nil {
+		return nil, errParse
+	}
+	createdTime = dateParse.Format("2006-01-02")
+
 	dataCustomer, errCustomer := entity.NewCustomer(entity.DTOCustomer{
 		CustomerID:  customer_id,
 		Name:        name,

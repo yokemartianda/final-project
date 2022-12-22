@@ -37,9 +37,9 @@ func NewTransaction(dto DTOTransaction) (*Transaction, error) {
 	if dto.CustomerID == "" {
 		return nil, errors.New("customer ID cannot be empty")
 	}
-	if dto.Revenue == 0 {
-		return nil, errors.New("revenue cannot be empty")
-	}
+	// if dto.Revenue == 0 {
+	// 	return nil, errors.New("revenue cannot be empty")
+	// }
 	if dto.PurchaseDate == "" {
 		return nil, errors.New("purchase date cannot be empty")
 	}
@@ -100,4 +100,13 @@ func (tr *Transaction) SetTransactionItems(transactionItems []*TransactionItems)
 
 func (tr *Transaction) GetCustomerName() string {
 	return tr.customerName
+}
+
+func (tr *Transaction) SumTotalRevenue() int {
+	var totalRevenue int
+	for _, item := range tr.transactionItems {
+		totalRevenue += item.GetRevenueItem()
+	}
+	tr.revenue = totalRevenue
+	return totalRevenue
 }

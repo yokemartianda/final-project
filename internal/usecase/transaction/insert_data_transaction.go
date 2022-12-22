@@ -6,6 +6,8 @@ import (
 )
 
 func (tr UsecaseTransactionInteractor) InsertDataTransaction(ctx context.Context, dataTransaction *entity.Transaction) error {
+	// before insert, sum total revenue from items and update value
+	dataTransaction.SumTotalRevenue()
 	_, err := tr.repoTransaction.InsertDataTransaction(ctx, dataTransaction)
 
 	for _, item := range dataTransaction.GetTransactionItems() {

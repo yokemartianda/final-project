@@ -50,7 +50,7 @@ func (m *TransactionMysqlInteractor) GetListTransaction(ctx context.Context, lim
 	defer cancel()
 
 	sqlQuery := "SELECT transaction_id, transaction.customer_id, customer.name, revenue, coupon_id, purchase_date FROM transaction " +
-		"LEFT JOIN customer ON transaction.customer_id = customer.customer_id LIMIT ?"
+		"LEFT JOIN customer ON transaction.customer_id = customer.customer_id ORDER BY purchase_date LIMIT ?"
 	rows, errMysql := m.db.QueryContext(ctx, sqlQuery, limit)
 	if errMysql != nil {
 		return nil, errMysql

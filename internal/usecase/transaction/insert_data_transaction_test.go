@@ -18,9 +18,10 @@ func TestUsecaseInsertDataTransaction(t *testing.T) {
 		connectionDatabase              = databasesql.InitMysqlDB()
 		transactionRepositoryMysql      = mysql.NewTransactionMysql(connectionDatabase)
 		transactionItemsRepositoryMysql = mysql.NewTransactionItemsMysql(connectionDatabase)
+		couponRepositoryMysql           = mysql.NewCouponMysql(connectionDatabase)
 	)
 
-	transactionUsecase := transaction.NewTransactionUsecase(transactionRepositoryMysql, transactionItemsRepositoryMysql)
+	transactionUsecase := transaction.NewTransactionUsecase(transactionRepositoryMysql, transactionItemsRepositoryMysql, couponRepositoryMysql)
 
 	listItems := make([]*entity.TransactionItems, 0)
 

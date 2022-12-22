@@ -17,7 +17,7 @@ func TestNewTransaction(t *testing.T) {
 	})
 	transaction.SetUniqTransactionID()
 
-	fmt.Println(transaction.GetTransactionID())
+	fmt.Println(transaction.GetPurchaseDate())
 	assert.Equal(t, "CUST-001", transaction.GetCustomerID())
 	assert.Equal(t, 5000000, transaction.GetRevenue())
 	assert.Equal(t, "2022-11-28", transaction.GetPurchaseDate())

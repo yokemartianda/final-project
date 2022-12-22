@@ -10,6 +10,7 @@ import (
 type Transaction struct {
 	transactionID    string
 	customerID       string
+	customerName     string
 	revenue          int
 	couponID         string
 	purchaseDate     time.Time
@@ -19,6 +20,7 @@ type Transaction struct {
 type DTOTransaction struct {
 	TransactionID    string
 	CustomerID       string
+	CustomerName     string
 	Revenue          int
 	CouponID         string
 	PurchaseDate     string
@@ -47,6 +49,7 @@ func NewTransaction(dto DTOTransaction) (*Transaction, error) {
 	transaction := &Transaction{
 		transactionID:    dto.TransactionID,
 		customerID:       dto.CustomerID,
+		customerName:     dto.CustomerName,
 		revenue:          dto.Revenue,
 		couponID:         dto.CouponID,
 		purchaseDate:     convertPurchaseDate,
@@ -93,4 +96,8 @@ func (tr *Transaction) GetTransactionItems() []*TransactionItems {
 func (tr *Transaction) SetTransactionItems(transactionItems []*TransactionItems) *Transaction {
 	tr.transactionItems = transactionItems
 	return tr
+}
+
+func (tr *Transaction) GetCustomerName() string {
+	return tr.customerName
 }

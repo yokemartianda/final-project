@@ -49,7 +49,8 @@ func (m *TransactionMysqlInteractor) GetListTransaction(ctx context.Context, lim
 
 	defer cancel()
 
-	sqlQuery := "SELECT transaction_id, customer_id, revenue, coupon_id, purchase_date FROM transaction LIMIT ?"
+	sqlQuery := "SELECT transaction_id, transaction.customer_id, customer.name, revenue, coupon_id, purchase_date FROM transaction " +
+		"LEFT JOIN customer ON transaction.customer_id = customer.customer_id LIMIT ?"
 	rows, errMysql := m.db.QueryContext(ctx, sqlQuery, limit)
 	if errMysql != nil {
 		return nil, errMysql
@@ -60,19 +61,28 @@ func (m *TransactionMysqlInteractor) GetListTransaction(ctx context.Context, lim
 		var (
 			transaction_id string
 			customer_id    string
+			customer_name  string
 			revenue        int
 			coupon_id      string
 			purchase_date  string
 		)
 
-		errTransaction := rows.Scan(&transaction_id, &customer_id, &revenue, &coupon_id, &purchase_date)
+		errTransaction := rows.Scan(&transaction_id, &customer_id, &customer_name, &revenue, &coupon_id, &purchase_date)
 
 		if errTransaction != nil {
 			return nil, errTransaction
 		}
+
+		dateParse, errParse := time.Parse("2006-01-02T15:04:05-07:00", purchase_date)
+		if errParse != nil {
+			return nil, errParse
+		}
+		purchase_date = dateParse.Format("2006-01-02")
+
 		transaction, errNewTransaction := entity.NewTransaction(entity.DTOTransaction{
 			TransactionID: transaction_id,
 			CustomerID:    customer_id,
+			CustomerName:  customer_name,
 			Revenue:       revenue,
 			CouponID:      coupon_id,
 			PurchaseDate:  purchase_date,

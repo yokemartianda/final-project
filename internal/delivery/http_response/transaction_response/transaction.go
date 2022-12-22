@@ -8,6 +8,7 @@ import (
 type ResponseTransactionJson struct {
 	TransactionID    string                      `json:"transaction_id"`
 	CustomerID       string                      `json:"customer_id"`
+	CustomerName     string                      `json:"customer_name"`
 	Revenue          int                         `json:"revenue"`
 	CouponID         string                      `json:"coupon_id"`
 	PurchaseDate     string                      `json:"purchase_date"`
@@ -53,6 +54,7 @@ func MapResponseTransaction(dataTransaction *entity.Transaction, code int, messa
 		resp = &ResponseTransactionJson{
 			TransactionID:    dataTransaction.GetTransactionID(),
 			CustomerID:       dataTransaction.GetCustomerID(),
+			CustomerName:     dataTransaction.GetCustomerName(),
 			Revenue:          dataTransaction.GetRevenue(),
 			CouponID:         dataTransaction.GetCouponID(),
 			PurchaseDate:     dataTransaction.GetPurchaseDate(),
@@ -93,6 +95,7 @@ func MapResponseListTransaction(listTransaction []*entity.Transaction, code int,
 		resp := &ResponseTransactionJson{
 			TransactionID:    data.GetTransactionID(),
 			CustomerID:       data.GetCustomerID(),
+			CustomerName:     data.GetCustomerName(),
 			Revenue:          data.GetRevenue(),
 			CouponID:         data.GetCouponID(),
 			PurchaseDate:     data.GetPurchaseDate(),

@@ -6,8 +6,13 @@ import (
 )
 
 func (tr UsecaseTransactionInteractor) InsertDataTransaction(ctx context.Context, dataTransaction *entity.Transaction) error {
+	// coupon validation
+	types, errCouponValidation := tr.repoCoupon.CouponValidation(ctx, dataTransaction)
+	if errCouponValidation != nil {
+		return errCouponValidation
+	}
 	// before insert, sum total revenue from items and update value
-	dataTransaction.SumTotalRevenue()
+	dataTransaction.SumTotalRevenue(types)
 	_, err := tr.repoTransaction.InsertDataTransaction(ctx, dataTransaction)
 
 	for _, item := range dataTransaction.GetTransactionItems() {

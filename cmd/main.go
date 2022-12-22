@@ -26,7 +26,7 @@ func main() {
 	r := mux.NewRouter()
 
 	handlerCustomer := customer_hendler.NewCustomerHandler(ctx, customerRepositoryMysql, couponRepositoryMysql)
-	handlerTransaction := transaction_handler.NewTransactionHandler(ctx, transactionRepositoryMysql, transactionItemsRepositoryMysql)
+	handlerTransaction := transaction_handler.NewTransactionHandler(ctx, transactionRepositoryMysql, transactionItemsRepositoryMysql, couponRepositoryMysql)
 	handlerCoupon := coupon_handler.NewCouponHandler(ctx, couponRepositoryMysql, customerRepositoryMysql)
 
 	r.HandleFunc("/", ParamHandlerWithoutInput).Methods(http.MethodGet)

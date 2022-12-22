@@ -2,6 +2,7 @@ package entity
 
 import (
 	"errors"
+	"fmt"
 	"math/rand"
 	"strconv"
 	"time"
@@ -102,10 +103,38 @@ func (tr *Transaction) GetCustomerName() string {
 	return tr.customerName
 }
 
-func (tr *Transaction) SumTotalRevenue() int {
+func (tr *Transaction) SumTotalRevenue(types string) int {
 	var totalRevenue int
-	for _, item := range tr.transactionItems {
-		totalRevenue += item.GetRevenueItem()
+	var revenuePerCriteria int
+	var dicountPrice int
+	if types != "" {
+		for _, item := range tr.transactionItems {
+			if types == "ULTI" && (item.GetCriteriaID() == 3 || item.GetCriteriaID() == 5) {
+				revenuePerCriteria += item.GetRevenueItem()
+			} else if types == "PREMI" && item.GetCriteriaID() == 1 {
+				revenuePerCriteria += item.GetRevenueItem()
+			} else if types == "BASIC" && item.GetCriteriaID() == 4 {
+				revenuePerCriteria += item.GetRevenueItem()
+			} else {
+				totalRevenue += item.GetRevenueItem()
+			}
+		}
+	} else {
+		for _, item := range tr.transactionItems {
+			totalRevenue += item.GetRevenueItem()
+		}
+	}
+	if revenuePerCriteria != 0 && types != "" {
+		if types == "ULTI" {
+			dicountPrice = int(float32(revenuePerCriteria) * 0.30)
+		} else if types == "PREMI" {
+			dicountPrice = int(float32(revenuePerCriteria) * 0.15)
+		} else if types == "BASIC" {
+			dicountPrice = int(float32(revenuePerCriteria) * 0.05)
+		}
+		revenuePerCriteria = revenuePerCriteria - dicountPrice
+		fmt.Println(totalRevenue)
+		totalRevenue = totalRevenue + revenuePerCriteria
 	}
 	tr.revenue = totalRevenue
 	return totalRevenue

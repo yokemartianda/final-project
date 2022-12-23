@@ -137,6 +137,12 @@ func (c *CouponMysqlInteractor) GetCouponByCustomerId(ctx context.Context, custo
 		if errCoupon != nil {
 			return nil, errCoupon
 		}
+		dateParse, errParse := time.Parse("2006-01-02T15:04:05-07:00", expired_date)
+		if errParse != nil {
+			return nil, errParse
+		}
+		expired_date = dateParse.Format("2006-01-02")
+
 		coupon, errNewCoupon := entity.NewCoupon(entity.DTOCoupon{
 			CouponID:    coupon_id,
 			Types:       types,

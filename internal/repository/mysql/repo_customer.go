@@ -13,11 +13,6 @@ type CustomerMysqlInteractor struct {
 	db *sql.DB
 }
 
-// GetCustomerById implements repository.InterfaceRepoCustomer
-func (*CustomerMysqlInteractor) GetCustomerById(ctx context.Context, customerid string) (*entity.Customer, error) {
-	panic("unimplemented")
-}
-
 func NewCustomerMysql(db *sql.DB) *CustomerMysqlInteractor {
 	return &CustomerMysqlInteractor{
 		db: db,
@@ -73,6 +68,11 @@ func (c *CustomerMysqlInteractor) GetListCustomer(ctx context.Context) ([]*entit
 		if err != nil {
 			return nil, err
 		}
+		dateParse, errParse := time.Parse("2006-01-02T15:04:05-07:00", createdTime)
+		if errParse != nil {
+			return nil, errParse
+		}
+		createdTime = dateParse.Format("2006-01-02")
 
 		dataCustomer, errCustomer := mapper.DataCustomerDbToEntity(entity.DTOCustomer{
 			CustomerID:  customerID,
@@ -94,7 +94,7 @@ func (c *CustomerMysqlInteractor) GetListCustomer(ctx context.Context) ([]*entit
 	return dataCustomerCollection, nil
 }
 
-func (c *CouponMysqlInteractor) GetCustomerById(ctx context.Context, customer_id string) (*entity.Customer, error) {
+func (c *CustomerMysqlInteractor) GetCustomerById(ctx context.Context, customer_id string) (*entity.Customer, error) {
 	var (
 		errMysql    error
 		customerid  string
@@ -112,6 +112,12 @@ func (c *CouponMysqlInteractor) GetCustomerById(ctx context.Context, customer_id
 	if errMysql != nil {
 		return nil, errMysql
 	}
+	dateParse, errParse := time.Parse("2006-01-02T15:04:05-07:00", createdTime)
+	if errParse != nil {
+		return nil, errParse
+	}
+	createdTime = dateParse.Format("2006-01-02")
+
 	dataCustomer, errCustomer := entity.NewCustomer(entity.DTOCustomer{
 		CustomerID:  customer_id,
 		Name:        name,

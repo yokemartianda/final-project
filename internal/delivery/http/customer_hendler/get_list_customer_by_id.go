@@ -3,7 +3,6 @@ package customer_hendler
 import (
 	"context"
 	"final-project/internal/delivery/http_response/customer_response"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -15,7 +14,6 @@ func (c *CustomerHandler) GetCustomerById(w http.ResponseWriter, r *http.Request
 	)
 	vars := mux.Vars(r)
 	id := vars["id"]
-	fmt.Printf("t1: %T\n", id)
 
 	customer, err := c.customerUsecase.GetCustomerById(ctx, id)
 	if err != nil {
@@ -25,7 +23,7 @@ func (c *CustomerHandler) GetCustomerById(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	response, errMap := customer_response.MapResponseCustomer(customer, 200, "Succes")
+	response, errMap := customer_response.MapResponseCustomer(customer, 200, "Succes", "")
 	if errMap != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)

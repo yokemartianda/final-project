@@ -15,8 +15,8 @@ type CustomReponseSingle struct {
 	Data   *ResponseCustomer `json:"data"`
 }
 type CustomResponseCollection struct {
-	Status *Status             `json:"status"`
-	Data   []*ResponseCustomer `json:"data"`
+	Status *Status                 `json:"status"`
+	Data   []*ResponseCustomerList `json:"data"`
 }
 
 type ResponseCustomer struct {
@@ -28,6 +28,14 @@ type ResponseCustomer struct {
 	Coupon      []*ResponseCoupon `json:"coupon"`
 }
 
+type ResponseCustomerList struct {
+	CustomerID  string `json:"customer_id"`
+	Name        string `json:"name"`
+	Alamat      string `json:"alamat"`
+	PhoneNumber string `json:"phone_number"`
+	CreatedTime string `json:"created_time"`
+}
+
 type ResponseCoupon struct {
 	CouponID    string `json:"coupon_id"`
 	Types       string `json:"types"`
@@ -36,27 +44,38 @@ type ResponseCoupon struct {
 	Status      int    `json:"status"`
 }
 
-func MapResponseCustomer(dataCustomer *entity.Customer, code int, message string) ([]byte, error) {
+type CustomerID struct {
+	CustomerID string `json:"customer_id"`
+}
 
-	listCoupon := make([]*ResponseCoupon, 0)
-	for _, dataCoupon := range dataCustomer.GetDataCoupon() {
-		responseCoupon := &ResponseCoupon{
-			CouponID:    dataCoupon.GetCouponID(),
-			Types:       dataCoupon.GetTypes(),
-			ExpiredDate: dataCoupon.GetExpiredDate(),
-			CustomerID:  dataCoupon.GetCustomerID(),
-			Status:      dataCoupon.GetStatus(),
+type ResponseSuccessInsert struct {
+	Status *Status     `json:"status"`
+	Data   *CustomerID `json:"data"`
+}
+
+func MapResponseCustomer(dataCustomer *entity.Customer, code int, message string, customer_id string) ([]byte, error) {
+	var resp *ResponseCustomer
+	if dataCustomer != nil {
+		listCoupon := make([]*ResponseCoupon, 0)
+		for _, dataCoupon := range dataCustomer.GetDataCoupon() {
+			responseCoupon := &ResponseCoupon{
+				CouponID:    dataCoupon.GetCouponID(),
+				Types:       dataCoupon.GetTypes(),
+				ExpiredDate: dataCoupon.GetExpiredDate(),
+				CustomerID:  dataCoupon.GetCustomerID(),
+				Status:      dataCoupon.GetStatus(),
+			}
+			listCoupon = append(listCoupon, responseCoupon)
 		}
-		listCoupon = append(listCoupon, responseCoupon)
-	}
 
-	customer := &ResponseCustomer{
-		CustomerID:  dataCustomer.GetCustomerID(),
-		Name:        dataCustomer.GetName(),
-		Alamat:      dataCustomer.GetAlamat(),
-		PhoneNumber: dataCustomer.GetPhoneNumber(),
-		CreatedTime: dataCustomer.GetCreatedTime(),
-		Coupon:      listCoupon,
+		resp = &ResponseCustomer{
+			CustomerID:  dataCustomer.GetCustomerID(),
+			Name:        dataCustomer.GetName(),
+			Alamat:      dataCustomer.GetAlamat(),
+			PhoneNumber: dataCustomer.GetPhoneNumber(),
+			CreatedTime: dataCustomer.GetCreatedTime(),
+			Coupon:      listCoupon,
+		}
 	}
 
 	httpResponse := &CustomReponseSingle{
@@ -64,7 +83,25 @@ func MapResponseCustomer(dataCustomer *entity.Customer, code int, message string
 			Code:    code,
 			Message: message,
 		},
-		Data: customer,
+		Data: resp,
+	}
+
+	if customer_id != "" {
+		httpResponse := &ResponseSuccessInsert{
+			Status: &Status{
+				Code:    code,
+				Message: message,
+			},
+			Data: &CustomerID{
+				CustomerID: customer_id,
+			},
+		}
+		respJson, err := json.Marshal(httpResponse)
+		if err != nil {
+			return nil, err
+		}
+
+		return respJson, nil
 	}
 
 	respJson, err := json.Marshal(httpResponse)
@@ -75,9 +112,9 @@ func MapResponseCustomer(dataCustomer *entity.Customer, code int, message string
 }
 
 func MapResponseListCustomer(listCustomer []*entity.Customer, code int, message string) ([]byte, error) {
-	lisResp := make([]*ResponseCustomer, 0)
+	lisResp := make([]*ResponseCustomerList, 0)
 	for _, data := range listCustomer {
-		rsp := &ResponseCustomer{
+		rsp := &ResponseCustomerList{
 			CustomerID:  data.GetCustomerID(),
 			Name:        data.GetName(),
 			Alamat:      data.GetAlamat(),

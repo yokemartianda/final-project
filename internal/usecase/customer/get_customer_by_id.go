@@ -3,7 +3,6 @@ package customer
 import (
 	"context"
 	"final-project/domain/entity"
-	"fmt"
 )
 
 func (c UsecaseCostumerInteractor) GetCustomerById(ctx context.Context, customer_id string) (*entity.Customer, error) {
@@ -12,9 +11,7 @@ func (c UsecaseCostumerInteractor) GetCustomerById(ctx context.Context, customer
 	if errcou != nil {
 		return nil, errcou
 	}
-	fmt.Println(&listCoupon, errcou)
 	listCustomer, err := c.repoCustomer.GetCustomerById(ctx, customer_id)
-	fmt.Println(listCustomer)
 	if err != nil {
 		return nil, err
 	}

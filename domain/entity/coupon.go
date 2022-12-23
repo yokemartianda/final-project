@@ -35,8 +35,11 @@ func NewCoupon(dto DTOCoupon) (*Coupon, error) {
 	expiredDate := today.AddDate(1, 0, 0)
 
 	coupon := &Coupon{
+		couponID:    dto.CouponID,
+		types:       dto.Types,
 		expiredDate: expiredDate,
 		customerID:  dto.CustomerID,
+		status:      dto.Status,
 		createdDate: time.Now(),
 	}
 

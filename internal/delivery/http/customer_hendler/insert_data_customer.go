@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"final-project/domain/entity"
 	"final-project/internal/delivery/http_request"
-	"fmt"
+	"final-project/internal/delivery/http_response/customer_response"
 	"net/http"
 	"time"
 )
@@ -18,9 +18,10 @@ func (c *CustomerHandler) StoreDataCustomer(w http.ResponseWriter, r *http.Reque
 	errDecode := decoder.Decode(&req)
 
 	if errDecode != nil {
-		fmt.Println(errDecode)
+		respErr, _ := customer_response.MapResponseCustomer(nil, http.StatusInternalServerError, "Error decode data", "")
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error decode data"))
+		w.Write(respErr)
 		return
 	}
 
@@ -34,21 +35,33 @@ func (c *CustomerHandler) StoreDataCustomer(w http.ResponseWriter, r *http.Reque
 	})
 
 	if err != nil {
-		fmt.Println(err)
+		respErr, _ := customer_response.MapResponseCustomer(nil, http.StatusInternalServerError, err.Error(), "")
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error build data"))
+		w.Write(respErr)
 		return
 	}
 	customer.SetUniqCustomerID()
 
-	errInsert := c.repoCustomer.InsertDataCustomer(c.ctx, customer)
+	custID, errInsert := c.customerUsecase.InsertDataCustomer(c.ctx, customer)
 	if errInsert != nil {
+		respErr, _ := customer_response.MapResponseCustomer(nil, http.StatusInternalServerError, errInsert.Error(), "")
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(errInsert.Error()))
+		w.Write(respErr)
 		return
 	}
 
-	w.WriteHeader(200)
-	fmt.Fprint(w, "SUCCES INSERT DATA")
+	resp, errMap := customer_response.MapResponseCustomer(nil, http.StatusOK, "SUCCESS INSERT DATA", custID)
+	if errMap != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(errMap.Error()))
+		return
+	}
 
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(resp)
+	return
 }

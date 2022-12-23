@@ -16,7 +16,7 @@ func (tr *TransactionHandler) StoreDataTransaction(w http.ResponseWriter, r *htt
 	errDecode := decoder.Decode(&req)
 
 	if errDecode != nil {
-		respErr, _ := transaction_response.MapResponseTransaction(nil, http.StatusInternalServerError, "Error decode data")
+		respErr, _ := transaction_response.MapResponseTransaction(nil, http.StatusInternalServerError, "Error decode data", "")
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(respErr)
@@ -41,25 +41,24 @@ func (tr *TransactionHandler) StoreDataTransaction(w http.ResponseWriter, r *htt
 		PurchaseDate:     req.PurchaseDate,
 		TransactionItems: listItems,
 	})
-
 	if err != nil {
-		respErr, _ := transaction_response.MapResponseTransaction(nil, http.StatusInternalServerError, err.Error())
+		respErr, _ := transaction_response.MapResponseTransaction(nil, http.StatusInternalServerError, err.Error(), "")
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(respErr)
 		return
 	}
 	transaction.SetUniqTransactionID()
-	errInsert := tr.transactionUsecase.InsertDataTransaction(tr.ctx, transaction)
+	traxID, errInsert := tr.transactionUsecase.InsertDataTransaction(tr.ctx, transaction)
 	if errInsert != nil {
-		respErr, _ := transaction_response.MapResponseTransaction(nil, http.StatusInternalServerError, errInsert.Error())
+		respErr, _ := transaction_response.MapResponseTransaction(nil, http.StatusInternalServerError, errInsert.Error(), "")
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(respErr)
 		return
 	}
 
-	resp, errMap := transaction_response.MapResponseTransaction(nil, http.StatusOK, "SUCCESS INSERT DATA")
+	resp, errMap := transaction_response.MapResponseTransaction(nil, http.StatusOK, "SUCCESS INSERT DATA", traxID)
 	if errMap != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)

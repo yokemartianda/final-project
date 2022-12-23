@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"final-project/domain/entity"
 	"time"
 )
@@ -17,7 +18,7 @@ func NewTransactionMysql(db *sql.DB) *TransactionMysqlInteractor {
 	}
 }
 
-func (m *TransactionMysqlInteractor) InsertDataTransaction(ctx context.Context, dataTransaction *entity.Transaction) (int64, error) {
+func (m *TransactionMysqlInteractor) InsertDataTransaction(ctx context.Context, dataTransaction *entity.Transaction) (string, error) {
 	var (
 		errMysql error
 	)
@@ -25,19 +26,17 @@ func (m *TransactionMysqlInteractor) InsertDataTransaction(ctx context.Context, 
 	ctx, cancel := context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
 
-	insertQuery := "INSERT INTO transaction (transaction_id, customer_id, revenue, coupon_id, purchase_date)" +
-		"VALUES(?, ?, ?, ?, ?)"
+	insertQuery := "INSERT INTO transaction (transaction_id, customer_id, revenue, coupon_id, discount_price, purchase_date)" +
+		"VALUES(?, ?, ?, ?, ?, ?)"
 
-	res, errMysql := m.db.Exec(insertQuery, dataTransaction.GetTransactionID(), dataTransaction.GetCustomerID(),
-		dataTransaction.GetRevenue(), dataTransaction.GetCouponID(), dataTransaction.GetPurchaseDate())
-
-	lid, _ := res.LastInsertId()
+	_, errMysql = m.db.Exec(insertQuery, dataTransaction.GetTransactionID(), dataTransaction.GetCustomerID(),
+		dataTransaction.GetRevenue(), dataTransaction.GetCouponID(), dataTransaction.GetDiscountPrice(), dataTransaction.GetPurchaseDate())
 
 	if errMysql != nil {
-		return 0, errMysql
+		return "", errMysql
 	}
 
-	return lid, nil
+	return dataTransaction.GetTransactionID(), nil
 }
 
 func (m *TransactionMysqlInteractor) GetListTransaction(ctx context.Context, limit int) ([]*entity.Transaction, error) {
@@ -96,4 +95,26 @@ func (m *TransactionMysqlInteractor) GetListTransaction(ctx context.Context, lim
 	defer rows.Close()
 
 	return transactionCollection, nil
+}
+
+func (m *TransactionMysqlInteractor) DeleteTransactionById(ctx context.Context, transaction_id string) error {
+	ctx, cancel := context.WithTimeout(ctx, 60*time.Second)
+	defer cancel()
+
+	deleteQuery := "DELETE FROM transaction where transaction_id = ?"
+	row, errMysql := m.db.ExecContext(ctx, deleteQuery, transaction_id)
+
+	if errMysql != nil && errMysql != sql.ErrNoRows {
+		return errMysql
+	}
+
+	check, err := row.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if check != 1 {
+		return errors.New("transaction id not found")
+	}
+
+	return nil
 }

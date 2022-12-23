@@ -9,8 +9,9 @@ import (
 )
 
 type TestScenarioRevenueWithTypes struct {
-	Types string
-	Want  int
+	Types            string
+	DiscountExpected int
+	Want             int
 }
 
 func TestNewTransactionWithoutTypes(t *testing.T) {
@@ -100,16 +101,19 @@ func TestNewTransactionWithTypes(t *testing.T) {
 
 	listScenario := []TestScenarioRevenueWithTypes{
 		{
-			Types: "ULTI",
-			Want:  2505000,
+			Types:            "ULTI",
+			DiscountExpected: 195000,
+			Want:             2505000,
 		},
 		{
-			Types: "PREMI",
-			Want:  2587500,
+			Types:            "PREMI",
+			DiscountExpected: 112500,
+			Want:             2587500,
 		},
 		{
-			Types: "BASIC",
-			Want:  2685000,
+			Types:            "BASIC",
+			DiscountExpected: 15000,
+			Want:             2685000,
 		},
 	}
 	for _, data := range listScenario {

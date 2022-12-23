@@ -2,7 +2,6 @@ package entity
 
 import (
 	"errors"
-	"fmt"
 	"math/rand"
 	"strconv"
 	"time"
@@ -14,6 +13,7 @@ type Transaction struct {
 	customerName     string
 	revenue          int
 	couponID         string
+	discountPrice    int
 	purchaseDate     time.Time
 	transactionItems []*TransactionItems
 }
@@ -24,6 +24,7 @@ type DTOTransaction struct {
 	CustomerName     string
 	Revenue          int
 	CouponID         string
+	DiscountPrice    int
 	PurchaseDate     string
 	TransactionItems []*TransactionItems
 }
@@ -53,6 +54,7 @@ func NewTransaction(dto DTOTransaction) (*Transaction, error) {
 		customerName:     dto.CustomerName,
 		revenue:          dto.Revenue,
 		couponID:         dto.CouponID,
+		discountPrice:    dto.DiscountPrice,
 		purchaseDate:     convertPurchaseDate,
 		transactionItems: dto.TransactionItems,
 	}
@@ -133,9 +135,13 @@ func (tr *Transaction) SumTotalRevenue(types string) int {
 			dicountPrice = int(float32(revenuePerCriteria) * 0.05)
 		}
 		revenuePerCriteria = revenuePerCriteria - dicountPrice
-		fmt.Println(totalRevenue)
 		totalRevenue = totalRevenue + revenuePerCriteria
 	}
+	tr.discountPrice = dicountPrice
 	tr.revenue = totalRevenue
 	return totalRevenue
+}
+
+func (tr *Transaction) GetDiscountPrice() int {
+	return tr.discountPrice
 }

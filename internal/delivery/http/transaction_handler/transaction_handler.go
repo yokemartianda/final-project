@@ -13,8 +13,7 @@ type TransactionHandler struct {
 	transactionUsecase usecase.TransactionService
 }
 
-func NewTransactionHandler(ctx context.Context, repoTransaction repository.InterfaceRepoTransaction,
-	repoTransactionItem repository.InterfaceRepoTransactionItem, repoCoupon repository.InterfaceRepoCoupon) *TransactionHandler {
+func NewTransactionHandler(ctx context.Context, repoTransaction repository.InterfaceRepoTransaction, repoTransactionItem repository.InterfaceRepoTransactionItem, repoCoupon repository.InterfaceRepoCoupon) *TransactionHandler {
 	transactionUsecas := transaction.NewTransactionUsecase(repoTransaction, repoTransactionItem, repoCoupon)
 	return &TransactionHandler{
 		repoTransaction:    repoTransaction,

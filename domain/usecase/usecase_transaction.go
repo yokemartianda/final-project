@@ -6,6 +6,6 @@ import (
 )
 
 type TransactionService interface {
-	InsertDataTransaction(ctx context.Context, dataTransaction *entity.Transaction) error
+	InsertDataTransaction(ctx context.Context, dataTransaction *entity.Transaction) (string, error)
 	GetListTransaction(ctx context.Context, limit int) ([]*entity.Transaction, error)
 }

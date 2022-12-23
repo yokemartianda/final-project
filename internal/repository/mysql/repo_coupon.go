@@ -38,6 +38,12 @@ func (c *CouponMysqlInteractor) GetCouponById(ctx context.Context, id_coupon str
 		return nil, errMysql
 	}
 
+	dateParse, errParse := time.Parse("2006-01-02T15:04:05-07:00", expired_date)
+	if errParse != nil {
+		return nil, errParse
+	}
+	expired_date = dateParse.Format("2006-01-02")
+
 	coupon, errCoupon := entity.NewCoupon(entity.DTOCoupon{
 		CouponID:    coupon_id,
 		Types:       types,
@@ -73,25 +79,29 @@ func (c *CouponMysqlInteractor) InsertDataCoupon(ctx context.Context, dataCoupon
 }
 
 func (c *CouponMysqlInteractor) CouponValidation(ctx context.Context, dataTransaction *entity.Transaction) (string, error) {
-	coupon, errCoupon := c.GetCouponById(ctx, dataTransaction.GetCouponID())
-	if errCoupon != nil {
-		if errCoupon == sql.ErrNoRows {
-			return "", errors.New("coupon not found")
+	if dataTransaction.GetCouponID() != "" {
+		coupon, errCoupon := c.GetCouponById(ctx, dataTransaction.GetCouponID())
+		if errCoupon != nil {
+			if errCoupon == sql.ErrNoRows {
+				return "", errors.New("coupon not found")
+			}
+			return "", errCoupon
 		}
-		return "", errCoupon
-	}
 
-	if coupon.GetCustomerID() != dataTransaction.GetCustomerID() {
-		return "", errors.New("this coupon not eligible for this customer")
-	}
+		if coupon.GetCustomerID() != dataTransaction.GetCustomerID() {
+			return "", errors.New("this coupon not eligible for this customer")
+		}
 
-	if coupon.GetStatus() == 1 {
-		return "", errors.New("this coupon was used")
-	}
+		if coupon.GetStatus() == 1 {
+			return "", errors.New("this coupon was used")
+		}
 
-	today := time.Now().Format("2006-01-02")
-	if coupon.GetExpiredDate() < today {
-		return "", errors.New("coupon expired")
+		today := time.Now().Format("2006-01-02")
+		if coupon.GetExpiredDate() < today {
+			return "", errors.New("coupon expired")
+		}
+
+		return coupon.GetTypes(), nil
 	}
 
 	return "", nil
@@ -142,4 +152,22 @@ func (c *CouponMysqlInteractor) GetCouponByCustomerId(ctx context.Context, custo
 	defer rows.Close()
 
 	return couponCollection, nil
+}
+
+func (c *CouponMysqlInteractor) UpdateCouponStatus(ctx context.Context, coupon_id string, status int) error {
+	ctx, cancel := context.WithTimeout(ctx, 60*time.Second)
+	defer cancel()
+	result, err := c.db.ExecContext(ctx, "UPDATE coupon SET status = ? WHERE coupon_id = ?", status, coupon_id)
+	if err != nil {
+		return err
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows != 1 {
+		return errors.New("coupon status not uupdated")
+	}
+
+	return nil
 }

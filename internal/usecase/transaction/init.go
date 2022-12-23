@@ -8,11 +8,10 @@ type UsecaseTransactionInteractor struct {
 	repoCoupon           repository.InterfaceRepoCoupon
 }
 
-func NewTransactionUsecase(repoTransaction repository.InterfaceRepoTransaction,
-	repoTransactionItems repository.InterfaceRepoTransactionItem,
-	repoCoupon repository.InterfaceRepoCoupon) *UsecaseTransactionInteractor {
+func NewTransactionUsecase(repoTransaction repository.InterfaceRepoTransaction, repoTransactionItems repository.InterfaceRepoTransactionItem, repoCoupon repository.InterfaceRepoCoupon) *UsecaseTransactionInteractor {
 	return &UsecaseTransactionInteractor{
 		repoTransaction:      repoTransaction,
 		repoTransactionItems: repoTransactionItems,
+		repoCoupon:           repoCoupon,
 	}
 }

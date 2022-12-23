@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"final-project/domain/entity"
 	"time"
 )
@@ -87,4 +88,26 @@ func (m *TransactionItemsMysqlInteractor) GetItemsByTransactionID(ctx context.Co
 	defer rows.Close()
 
 	return itemsCollection, nil
+}
+
+func (m *TransactionItemsMysqlInteractor) DeleteItemsByTransactionId(ctx context.Context, transaction_id string) error {
+	ctx, cancel := context.WithTimeout(ctx, 60*time.Second)
+	defer cancel()
+
+	deleteQuery := "DELETE FROM transaction_items where transaction_id = ?"
+	row, errMysql := m.db.ExecContext(ctx, deleteQuery, transaction_id)
+
+	if errMysql != nil && errMysql != sql.ErrNoRows {
+		return errMysql
+	}
+
+	check, err := row.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if check != 1 {
+		return errors.New("transaction id not found")
+	}
+
+	return nil
 }

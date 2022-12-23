@@ -27,9 +27,18 @@ type Status struct {
 	Message string `json:"message"`
 }
 
+type TransactionID struct {
+	TransactionID string `json:"transaction_id"`
+}
+
 type CustomReponseSingle struct {
 	Status *Status                  `json:"status"`
 	Data   *ResponseTransactionJson `json:"data"`
+}
+
+type ResponseSuccessInsert struct {
+	Status *Status        `json:"status"`
+	Data   *TransactionID `json:"data"`
 }
 
 type CustomReponseCollection struct {
@@ -37,7 +46,7 @@ type CustomReponseCollection struct {
 	Data   []*ResponseTransactionJson `json:"data"`
 }
 
-func MapResponseTransaction(dataTransaction *entity.Transaction, code int, message string) ([]byte, error) {
+func MapResponseTransaction(dataTransaction *entity.Transaction, code int, message string, transaction_id string) ([]byte, error) {
 	var resp *ResponseTransactionJson
 	if dataTransaction != nil {
 		listItems := make([]*ResponseTransactionItems, 0)
@@ -70,6 +79,24 @@ func MapResponseTransaction(dataTransaction *entity.Transaction, code int, messa
 			Message: message,
 		},
 		Data: resp,
+	}
+
+	if transaction_id != "" {
+		httpResponse := &ResponseSuccessInsert{
+			Status: &Status{
+				Code:    code,
+				Message: message,
+			},
+			Data: &TransactionID{
+				TransactionID: transaction_id,
+			},
+		}
+		respJson, err := json.Marshal(httpResponse)
+		if err != nil {
+			return nil, err
+		}
+
+		return respJson, nil
 	}
 
 	respJson, err := json.Marshal(httpResponse)

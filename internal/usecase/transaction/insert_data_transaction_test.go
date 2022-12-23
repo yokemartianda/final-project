@@ -51,7 +51,7 @@ func TestUsecaseInsertDataTransaction(t *testing.T) {
 		fmt.Println(err)
 	}
 
-	errInsert := transactionUsecase.InsertDataTransaction(ctx, transaction)
+	_, errInsert := transactionUsecase.InsertDataTransaction(ctx, transaction)
 
 	assert.Nil(t, errInsert)
 }

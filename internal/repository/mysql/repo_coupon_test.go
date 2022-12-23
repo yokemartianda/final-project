@@ -68,7 +68,7 @@ func TestRepoCouponValidationNegativeTest(t *testing.T) {
 			Want:         errors.New("this coupon not eligible for this customer"),
 		},
 		{
-			CustomerID:   "CUST12226895",
+			CustomerID:   "CUST22456861",
 			Revenue:      3000000,
 			CouponID:     "BASIC-RND1923808132345",
 			PurchaseDate: "2022-12-12",

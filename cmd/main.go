@@ -29,20 +29,13 @@ func main() {
 	handlerTransaction := transaction_handler.NewTransactionHandler(ctx, transactionRepositoryMysql, transactionItemsRepositoryMysql, couponRepositoryMysql)
 	handlerCoupon := coupon_handler.NewCouponHandler(ctx, couponRepositoryMysql, customerRepositoryMysql, transactionRepositoryMysql)
 
-	r.HandleFunc("/", ParamHandlerWithoutInput).Methods(http.MethodGet)
 	r.HandleFunc("/create-customer", handlerCustomer.StoreDataCustomer).Methods(http.MethodPost)
-	r.HandleFunc("/create-coupon", handlerCoupon.StoreDataCoupon).Methods(http.MethodPost)
+	r.HandleFunc("/generate-coupon", handlerCoupon.StoreDataCoupon).Methods(http.MethodPost)
 	r.HandleFunc("/create-transaction", handlerTransaction.StoreDataTransaction).Methods(http.MethodPost)
 	r.HandleFunc("/list-transaction", handlerTransaction.GetListTransaction).Methods(http.MethodGet)
 	r.HandleFunc("/customer/{id}", handlerCustomer.GetCustomerById).Methods(http.MethodGet)
 	r.HandleFunc("/list-customer", handlerCustomer.GetListCustomer).Methods(http.MethodGet)
 
-	http.HandleFunc("/test", ParamHandlerWithoutInput)
 	fmt.Println("localhost:8080")
 	http.ListenAndServe(":8080", r)
-}
-
-func ParamHandlerWithoutInput(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "SUCCES OK")
 }

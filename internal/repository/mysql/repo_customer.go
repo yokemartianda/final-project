@@ -153,6 +153,11 @@ func (c *CustomerMysqlInteractor) GetCustomerPhoneNumber(ctx context.Context, ph
 	defer cancel()
 	sqlQuery := "SELECT customer_id, name, alamat, phone_number, created_time FROM customer WHERE phone_number = ?"
 	errMysql = c.db.QueryRowContext(ctx, sqlQuery, phone_number).Scan(&customerid, &name, &alamat, &phoneNumber, &createdTime)
+
+	if errMysql == sql.ErrNoRows {
+		return nil, nil
+	}
+
 	if errMysql != nil {
 		return nil, errMysql
 	}

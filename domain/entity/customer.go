@@ -38,13 +38,13 @@ func NewCustomer(dto DTOCustomer) (*Customer, error) {
 	if dto.CreatedTime == "" {
 		return nil, errors.New("CREATED TIME CANNOT BE EMPTY")
 	}
-	lenPhoneNumber := len(dto.PhoneNumber)
-	if lenPhoneNumber != 12 {
-		return nil, errors.New("PHONE NUMBER MUST 12 CHARACTER")
-	}
 	_, errConvertNumber := strconv.Atoi(dto.PhoneNumber)
 	if errConvertNumber != nil {
 		return nil, errors.New("PHONE NUMBER ONLY CONTAINS NUMERIC")
+	}
+	lenPhoneNumber := len(dto.PhoneNumber)
+	if lenPhoneNumber != 12 {
+		return nil, errors.New("PHONE NUMBER MUST 12 CHARACTER")
 	}
 	strCreatedTime, _ := time.Parse("2006-01-02", dto.CreatedTime)
 

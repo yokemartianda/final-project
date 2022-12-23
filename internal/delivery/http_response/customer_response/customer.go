@@ -7,7 +7,7 @@ import (
 
 type Status struct {
 	Code    int    `json:"code"`
-	Mesaage string `json:"mesaage"`
+	Message string `json:"message"`
 }
 
 type CustomReponseSingle struct {
@@ -62,7 +62,7 @@ func MapResponseCustomer(dataCustomer *entity.Customer, code int, message string
 	httpResponse := &CustomReponseSingle{
 		Status: &Status{
 			Code:    code,
-			Mesaage: message,
+			Message: message,
 		},
 		Data: customer,
 	}
@@ -89,7 +89,7 @@ func MapResponseListCustomer(listCustomer []*entity.Customer, code int, message 
 	httpResponse := &CustomResponseCollection{
 		Status: &Status{
 			Code:    code,
-			Mesaage: message,
+			Message: message,
 		},
 		Data: lisResp,
 	}

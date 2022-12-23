@@ -118,3 +118,31 @@ func (m *TransactionMysqlInteractor) DeleteTransactionById(ctx context.Context, 
 
 	return nil
 }
+
+func (m *TransactionMysqlInteractor) SumTransactionById(ctx context.Context, customer_id string, lastDateCreated string) int64 {
+	var (
+		errMysql    error
+		sum_revenue int64
+	)
+
+	_, cancel := context.WithTimeout(ctx, 60*time.Second)
+	defer cancel()
+
+	if lastDateCreated != "" {
+		sqlQuery := "SELECT SUM(revenue) as sum_revenue FROM transaction WHERE customer_id = ? AND purchase_date > ?"
+		errMysql = m.db.QueryRowContext(ctx, sqlQuery, customer_id, lastDateCreated).Scan(&sum_revenue)
+	} else {
+		sqlQuery := "SELECT SUM(revenue) as sum_revenue FROM transaction WHERE customer_id = ?"
+		errMysql = m.db.QueryRowContext(ctx, sqlQuery, customer_id).Scan(&sum_revenue)
+	}
+
+	if errMysql == sql.ErrNoRows {
+		return 0
+	}
+
+	if errMysql != nil {
+		return 0
+	}
+
+	return sum_revenue
+}

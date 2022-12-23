@@ -105,7 +105,7 @@ func (tr *Transaction) GetCustomerName() string {
 	return tr.customerName
 }
 
-func (tr *Transaction) SumTotalRevenue(types string) int {
+func (tr *Transaction) SumTotalRevenue(types string) (int, int) {
 	var totalRevenue int
 	var revenuePerCriteria int
 	var dicountPrice int
@@ -139,7 +139,7 @@ func (tr *Transaction) SumTotalRevenue(types string) int {
 	}
 	tr.discountPrice = dicountPrice
 	tr.revenue = totalRevenue
-	return totalRevenue
+	return totalRevenue, dicountPrice
 }
 
 func (tr *Transaction) GetDiscountPrice() int {

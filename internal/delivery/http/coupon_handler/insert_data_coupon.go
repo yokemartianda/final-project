@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"final-project/domain/entity"
 	"final-project/internal/delivery/http_request"
-	"fmt"
+	"final-project/internal/delivery/http_response/coupon_response"
 	"net/http"
 )
 
@@ -17,35 +17,44 @@ func (c *CouponHandler) StoreDataCoupon(w http.ResponseWriter, r *http.Request) 
 	errDecode := decoder.Decode(&req)
 
 	if errDecode != nil {
+		respErr, _ := coupon_response.MapResponseCoupon(nil, http.StatusInternalServerError, "Error decode data", "")
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error decode data"))
+		w.Write(respErr)
 		return
 	}
 
 	coupon, err := entity.NewCoupon(entity.DTOCoupon{
-		CouponID:    req.CouponID,
-		Types:       req.Types,
-		ExpiredDate: req.ExpiredDate,
-		CustomerID:  req.CustomerID,
-		Status:      req.Status,
+		CustomerID: req.CustomerID,
 	})
 
 	if err != nil {
+		respErr, _ := coupon_response.MapResponseCoupon(nil, http.StatusInternalServerError, err.Error(), "")
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error Build Data"))
+		w.Write(respErr)
 		return
 	}
 
-	errInsert := c.repoCoupon.InsertDataCoupon(c.ctx, coupon)
+	coupon_id, errInsert := c.usecaseCoupon.InsertDataCoupon(c.ctx, coupon)
 	if errInsert != nil {
+		respErr, _ := coupon_response.MapResponseCoupon(nil, http.StatusInternalServerError, errInsert.Error(), "")
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(errInsert.Error()))
+		w.Write(respErr)
 		return
 	}
 
-	w.WriteHeader(200)
-	fmt.Fprint(w, "SUKSES INSERT DATA")
+	resp, errMap := coupon_response.MapResponseCoupon(nil, http.StatusOK, "SUCCESS INSERT DATA", coupon_id)
+	if errMap != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(errMap.Error()))
+		return
+	}
 
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(resp)
+	return
 }
-
-//

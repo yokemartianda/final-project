@@ -13,8 +13,8 @@ func (tr UsecaseTransactionInteractor) InsertDataTransaction(ctx context.Context
 		return "", errCouponValidation
 	}
 	// before insert, sum total revenue from items and update value
-	totalRevenue := dataTransaction.SumTotalRevenue(types)
-	if dataTransaction.GetCouponID() != "" && totalRevenue == 0 {
+	_, discountPrice := dataTransaction.SumTotalRevenue(types)
+	if dataTransaction.GetCouponID() != "" && discountPrice == 0 {
 		return "", errors.New("list items not contain items with this coupon criteria")
 	}
 	traxID, err := tr.repoTransaction.InsertDataTransaction(ctx, dataTransaction)
@@ -30,7 +30,7 @@ func (tr UsecaseTransactionInteractor) InsertDataTransaction(ctx context.Context
 		return "", err
 	}
 
-	if errCouponValidation == nil && totalRevenue != 0 {
+	if errCouponValidation == nil && discountPrice != 0 {
 		errUpdateStatus := tr.repoCoupon.UpdateCouponStatus(ctx, dataTransaction.GetCouponID(), 1)
 		if errUpdateStatus != nil {
 			errDeleteTrax := tr.repoTransaction.DeleteTransactionById(ctx, dataTransaction.GetTransactionID())

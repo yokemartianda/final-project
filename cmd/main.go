@@ -27,7 +27,7 @@ func main() {
 
 	handlerCustomer := customer_hendler.NewCustomerHandler(ctx, customerRepositoryMysql, couponRepositoryMysql)
 	handlerTransaction := transaction_handler.NewTransactionHandler(ctx, transactionRepositoryMysql, transactionItemsRepositoryMysql, couponRepositoryMysql)
-	handlerCoupon := coupon_handler.NewCouponHandler(ctx, couponRepositoryMysql, customerRepositoryMysql)
+	handlerCoupon := coupon_handler.NewCouponHandler(ctx, couponRepositoryMysql, customerRepositoryMysql, transactionRepositoryMysql)
 
 	r.HandleFunc("/", ParamHandlerWithoutInput).Methods(http.MethodGet)
 	r.HandleFunc("/create-customer", handlerCustomer.StoreDataCustomer).Methods(http.MethodPost)

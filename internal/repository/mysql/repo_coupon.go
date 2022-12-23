@@ -59,7 +59,7 @@ func (c *CouponMysqlInteractor) GetCouponById(ctx context.Context, id_coupon str
 	return coupon, nil
 }
 
-func (c *CouponMysqlInteractor) InsertDataCoupon(ctx context.Context, dataCoupon *entity.Coupon) error {
+func (c *CouponMysqlInteractor) InsertDataCoupon(ctx context.Context, dataCoupon *entity.Coupon) (string, error) {
 	var (
 		errMysql error
 	)
@@ -67,15 +67,15 @@ func (c *CouponMysqlInteractor) InsertDataCoupon(ctx context.Context, dataCoupon
 	_, cancel := context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
 
-	insertQuery := "INSERT INTO coupon (coupon_id, types, expired_date, customer_id, status)" +
-		"VALUES(?, ?, ?, ?, ?)"
+	insertQuery := "INSERT INTO coupon (coupon_id, types, expired_date, customer_id, status, created_date)" +
+		"VALUES(?, ?, ?, ?, ?, ?)"
 
-	_, errMysql = c.db.Exec(insertQuery, dataCoupon.GetCouponID(), dataCoupon.GetTypes(), dataCoupon.GetExpiredDate(), dataCoupon.GetCustomerID(), dataCoupon.GetStatus())
+	_, errMysql = c.db.Exec(insertQuery, dataCoupon.GetCouponID(), dataCoupon.GetTypes(), dataCoupon.GetExpiredDate(), dataCoupon.GetCustomerID(), dataCoupon.GetStatus(), dataCoupon.GetDateCreated())
 
 	if errMysql != nil {
-		return errMysql
+		return "", errMysql
 	}
-	return nil
+	return dataCoupon.GetCouponID(), nil
 }
 
 func (c *CouponMysqlInteractor) CouponValidation(ctx context.Context, dataTransaction *entity.Transaction) (string, error) {
@@ -176,4 +176,57 @@ func (c *CouponMysqlInteractor) UpdateCouponStatus(ctx context.Context, coupon_i
 	}
 
 	return nil
+}
+
+func (c *CouponMysqlInteractor) GetLastCreatedCouponByCustomerId(ctx context.Context, customer_id string) (*entity.Coupon, error) {
+	var (
+		errMysql     error
+		coupon_id    string
+		types        string
+		expired_date string
+		customerID   string
+		status       int
+		created_date string
+	)
+
+	_, cancel := context.WithTimeout(ctx, 60*time.Second)
+	defer cancel()
+
+	sqlQuery := "SELECT coupon_id, types, expired_date, customer_id, status, created_date FROM coupon WHERE customer_id = ? ORDER BY created_date DESC LIMIT 1"
+	errMysql = c.db.QueryRowContext(ctx, sqlQuery, customer_id).Scan(&coupon_id, &types, &expired_date, &customerID, &status, &created_date)
+
+	if errMysql == sql.ErrNoRows {
+		return nil, nil
+	}
+
+	if errMysql != nil {
+		return nil, errMysql
+	}
+
+	expDateParse, errParse := time.Parse("2006-01-02T15:04:05-07:00", expired_date)
+	if errParse != nil {
+		return nil, errParse
+	}
+	expired_date = expDateParse.Format("2006-01-02")
+
+	createdDateParse, errParse := time.Parse("2006-01-02T15:04:05-07:00", created_date)
+	if errParse != nil {
+		return nil, errParse
+	}
+	created_date = createdDateParse.Format("2006-01-02 15:04:05")
+
+	coupon, errCoupon := entity.NewCoupon(entity.DTOCoupon{
+		CouponID:    coupon_id,
+		Types:       types,
+		CustomerID:  customer_id,
+		ExpiredDate: expired_date,
+		Status:      status,
+		CreatedDate: created_date,
+	})
+
+	if errCoupon != nil {
+		return nil, errCoupon
+	}
+
+	return coupon, nil
 }

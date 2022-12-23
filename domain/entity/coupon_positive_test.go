@@ -2,6 +2,7 @@ package entity_test
 
 import (
 	"final-project/domain/entity"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,16 +10,23 @@ import (
 
 func TestNewCoupon(t *testing.T) {
 	coupon, err := entity.NewCoupon(entity.DTOCoupon{
-		CouponID:    "ULTI-RND7821387123456",
-		Types:       "ULTI",
-		ExpiredDate: "2023-11-28",
-		Status:      1,
+		CustomerID: "CUST15399180",
 	})
 
-	assert.Equal(t, "ULTI-RND7821387123456", coupon.GetCouponID())
-	assert.Equal(t, "ULTI", coupon.GetTypes())
-	assert.Equal(t, "2023-11-28", coupon.GetExpiredDate())
+	fmt.Println(coupon.GetExpiredDate())
+	assert.Equal(t, "2023-12-23", coupon.GetExpiredDate())
+	assert.Equal(t, "CUST15399180", coupon.GetCustomerID())
+	assert.Equal(t, 0, coupon.GetStatus())
 	assert.Nil(t, err)
 }
 
-//
+func TestGenerateCouponId(t *testing.T) {
+	// sumRevenue := 4000000
+	coupon, _ := entity.NewCoupon(entity.DTOCoupon{
+		CustomerID: "CUST15399180",
+	})
+
+	couponID, errGenerateCouponId := coupon.GenerateCouponId(10000000)
+	fmt.Println(couponID)
+	assert.Nil(t, errGenerateCouponId)
+}

@@ -88,3 +88,22 @@ func TestRepoCouponValidationNegativeTest(t *testing.T) {
 		assert.Equal(t, testCase.Want, errValidation)
 	}
 }
+
+func TestRepoGetLastCreatedCouponByCustomerId(t *testing.T) {
+	var (
+		ctx                   = context.Background()
+		connectionDatabase    = databasesql.InitMysqlDB()
+		couponRepositoryMysql = mysql.NewCouponMysql(connectionDatabase)
+		customer_id           = "CUST15399180"
+	)
+
+	coupon, err := couponRepositoryMysql.GetLastCreatedCouponByCustomerId(ctx, customer_id)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(coupon.GetDateCreated())
+	fmt.Printf("date_created: %T\n", coupon.GetDateCreated())
+	assert.Nil(t, err)
+}

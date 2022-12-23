@@ -47,7 +47,7 @@ func TestNewTransactionWithoutTypes(t *testing.T) {
 	transactionItems = append(transactionItems, items1, items2, items3, items4)
 	transaction.SetTransactionItems(transactionItems)
 	types = ""
-	total_revenue := transaction.SumTotalRevenue(types)
+	total_revenue, _ := transaction.SumTotalRevenue(types)
 
 	fmt.Println(total_revenue)
 	fmt.Println(transaction.GetRevenue())
@@ -117,7 +117,7 @@ func TestNewTransactionWithTypes(t *testing.T) {
 		},
 	}
 	for _, data := range listScenario {
-		total_revenue := transaction.SumTotalRevenue(data.Types)
+		total_revenue, _ := transaction.SumTotalRevenue(data.Types)
 
 		fmt.Println(total_revenue)
 		fmt.Println(transaction.GetRevenue())
